@@ -2,7 +2,7 @@
 using BepInEx;
 using HarmonyLib;
 
-namespace ModFrame
+namespace BackPacks
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class NewMod : BaseUnityPlugin
