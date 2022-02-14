@@ -103,30 +103,6 @@ public class BackPack : Container
         }
 #endif
     }
-    
-    public static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
-    {
-        var playerInventory = player.GetInventory();
-
-        // Move the backpack to the player's Inventory if there's room.
-        if (playerInventory.HaveEmptySlot())
-        {
-            playerInventory.MoveItemToThis(backpackInventory, item);
-        }
-
-        // Otherwise drop the backpack.
-        else
-        {
-            Debug.LogAssertion("Clever... But you're still not gonna cause backpackception!");
-            backpackInventory.RemoveItem(item);
-            ItemDrop.DropItem(item, 1, player.transform.position 
-                                       + player.transform.forward 
-                                       + player.transform.up, player.transform.rotation);
-
-        }
-
-    }
-
     private void BagContentsChanged()
     {
         if (!m_nview.IsValid()) return;

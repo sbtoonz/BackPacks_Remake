@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using HarmonyLib;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace BackPacks
 {
@@ -39,11 +38,7 @@ namespace BackPacks
                 if (__instance != Player.m_localPlayer.GetInventory()) return;
                 if (new StackFrame(2).ToString().IndexOf("OverrideGetTotalWeight", StringComparison.Ordinal) > -1) return;
                 if(BackPack.StaticActive) __result += BackPack.StaticWeight;
-                else
-                {
-                    __result = 0;
-                }
-                
+
             }
         }
 
@@ -145,25 +140,17 @@ namespace BackPacks
         private static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {
             var playerInventory = player.GetInventory();
-
-            // Move the backpack to the player's Inventory if there's room.
             if (playerInventory.HaveEmptySlot())
             {
                 playerInventory.MoveItemToThis(backpackInventory, item);
             }
-
-            // Otherwise drop the backpack.
             else
             {
                 backpackInventory.RemoveItem(item);
                 ItemDrop.DropItem(item, 1, player.transform.position 
                                            + player.transform.forward 
                                            + player.transform.up, player.transform.rotation);
-
             }
-
         }
-
-        
     }
 }
