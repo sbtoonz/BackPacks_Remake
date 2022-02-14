@@ -278,10 +278,11 @@
       <Link>MonoScripts\BackPack.cs</Link>
     </Compile>
     <Compile Include="ModCore.cs" />
+    <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\backpackdrop" />
+    <EmbeddedResource Include="Assets\backpackdrop" />
     <EmbeddedResource Include="..\BackPack_UnityProject\Assets\AssetBundles\backpacks">
       <Link>Assets\backpacks</Link>
     </EmbeddedResource>

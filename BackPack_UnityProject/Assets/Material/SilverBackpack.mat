@@ -8,14 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SilverBackpack
-  m_Shader: {fileID: 4800000, guid: d28b7be52384e9c4197d29b0441c70fd, type: 3}
-  m_ShaderKeywords: _ALPHATEST_ON _DETAILSOURCE_METALLICALPHA _DETAILSOURCE_SPECULARALPHA _ENABLETRIPLANARPROJECTION_ON _METALLICGLOSSMAP _NORMALMAP _SOURCE_METALLICALPHA _SOURCE_SPECULARALPHA _TRIPLANARSPACEPROJECTION_OBJECTSPACE _USEAOFROMMAINPROPERTIES_ON _USEBASECOLORALPHA_ON _USEEMISSIONFROMMAINPROPERTIES_ON
+  m_Shader: {fileID: 4800000, guid: 6159ad4d749e35143b8bb845cf447be6, type: 3}
+  m_ShaderKeywords: _DETAILSOURCE_METALLICALPHA _DETAILSOURCE_SPECULARALPHA _ENABLETRIPLANARPROJECTION_ON
+    _METALLICGLOSSMAP _NORMALMAP _SOURCE_METALLICALPHA _SOURCE_SPECULARALPHA _TRIPLANARSPACEPROJECTION_OBJECTSPACE
+    _USEAOFROMMAINPROPERTIES_ON _USEBASECOLORALPHA_ON _USEEMISSIONFROMMAINPROPERTIES_ON
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2450
-  stringTagMap:
-    RenderType: TransparentCutout
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 1
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -37,7 +38,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: de37ea9188eef6e4096d11c7e31e0bcc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -56,6 +57,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AoIntensity: 1
     - _BlendMainNormal: 0
@@ -64,7 +69,7 @@ Material:
     - _BumpScale: 1
     - _ContrastDetailMap: 0
     - _Cull: 0
-    - _Cutoff: 0.5
+    - _Cutoff: 1
     - _DetailBrightness: 1
     - _DetailGlossiness: 0.5
     - _DetailMetallic: 0
@@ -76,18 +81,18 @@ Material:
     - _EmissionIntensity: 1
     - _EnableDetailMask: 0
     - _EnableTriplanarProjection: 1
-    - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _GlossMapScale: 0.457
+    - _Glossiness: 0.666
     - _GlossyReflections: 1
     - _IntensityCutoutMap: 0.5
     - _IntensityMask: 1
     - _InvertABaseColor: 0
     - _InvertCutout: 0
     - _InvertMask: 0
-    - _Metallic: 0
-    - _Mode: 1
+    - _Metallic: 1
+    - _Mode: 0
     - _OcclusionStrength: 1
-    - _Parallax: 0.02
+    - _Parallax: 0.005
     - _Saturation: 0
     - _SmoothnessTextureChannel: 0
     - _Source: 0
@@ -110,7 +115,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DetailColor: {r: 1, g: 1, b: 1, a: 0}
     - _DetailSpecularColor: {r: 1, g: 1, b: 1, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0.0045955884, g: 0.003952206, b: 0.0009803922, a: 1}
     - _GlobalXYTilingXYZWOffsetXY: {r: 1, g: 1, b: 0, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 0}
     - _TriplanarXYTilingXYZWOffsetXY: {r: 1, g: 1, b: 0, a: 0}
