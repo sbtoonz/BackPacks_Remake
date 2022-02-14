@@ -67,6 +67,15 @@
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="BlacksmithTools, Version=2.0.2.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>Libs\BlacksmithTools.dll</HintPath>
+    </Reference>
+    <Reference Include="ItemManager, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>Libs\ItemManager.dll</HintPath>
+    </Reference>
+    <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>Libs\ServerSync.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -265,16 +274,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\BackPack_UnityProject\Assets\Scripts\BackPack.cs">
+      <Link>MonoScripts\BackPack.cs</Link>
+    </Compile>
     <Compile Include="ModCore.cs" />
-    <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Assets\backpackdrop" />
+    <EmbeddedResource Include="..\BackPack_UnityProject\Assets\AssetBundles\backpacks">
+      <Link>Assets\backpacks</Link>
+    </EmbeddedResource>
+    <Content Include="ILRepack.targets" />
+    <Content Include="Libs\BlacksmithTools.dll" />
     <Content Include="Libs\ItemManager.dll" />
     <Content Include="Libs\ServerSync.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -284,6 +301,13 @@
     <Target Name="AfterBuild">
     </Target>
     -->
+	 <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
+	 <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+	   <PropertyGroup>
+	     <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+	   </PropertyGroup>
+	   <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
+	 </Target>
 	 <Target Name="Copy" AfterTargets="Build">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
