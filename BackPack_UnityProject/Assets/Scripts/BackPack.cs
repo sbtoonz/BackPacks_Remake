@@ -1,21 +1,34 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿#define UNITY_COMPILEFLAG
+using System;
 using UnityEngine;
-using Object = System.Object;
+
 
 public class BackPack : Container
 {
-    private Inventory _mInventory;
-
-    public BackPack(Inventory mInventory)
+    [Serializable]
+    internal enum BagTier
     {
-        _mInventory = mInventory;
+        Leather,
+        Iron,
+        Silver,
+        BlackMetal,
+        UnKnown
     }
+
+    [SerializeField] internal BagTier tier;
+    internal static BagTier StaticTier;
+    [SerializeField] internal ItemDrop ItemDataref;
+#if UNITY_COMPILEFLAG
+    private bool IsActive => gameObject.activeInHierarchy;
+    private float TotalWeight => m_inventory.GetTotalWeight();
     
-    
+    internal static float StaticWeight;
+    internal static bool StaticActive;
+    internal static Inventory? StaticInventory;
+    #endif
     private new void Awake()
     {
+        #if UNITY_COMPILEFLAG
         if (Player.m_localPlayer == null)
         {
             return;
@@ -43,46 +56,95 @@ public class BackPack : Container
            destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
        }
        InvokeRepeating(nameof(BagContentsChanged), 0f, 1f);
+       #endif
     }
 
     private void OnDisable()
     {
+        #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
         m_nview.Unregister("RequestOpen");
         m_nview.Unregister("OpenRespons");
         m_nview.Unregister("RequestTakeAll");
         m_nview.Unregister("TakeAllRespons");
+        #endif
     }
 
     private void Update()
     {
+        #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
         if (!InventoryGui.IsVisible()) return;
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.T))
         {
-            Interact(Player.m_localPlayer, false, false);
+            try
+            {
+                Interact(Player.m_localPlayer, false, false);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
+        StaticActive = IsActive;
+        StaticWeight = TotalWeight;
+        StaticInventory = m_inventory;
+        StaticTier = tier;
+        #endif
     }
 
     private void OnBackPackChange()
     {
+#if UNITY_COMPILEFLAG
         if (!m_loading && IsOwner())
         {
+            
             SavePack();
         }
+#endif
     }
+    
+    public static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
+    {
+        var playerInventory = player.GetInventory();
+
+        // Move the backpack to the player's Inventory if there's room.
+        if (playerInventory.HaveEmptySlot())
+        {
+            playerInventory.MoveItemToThis(backpackInventory, item);
+        }
+
+        // Otherwise drop the backpack.
+        else
+        {
+            Debug.LogAssertion("Clever... But you're still not gonna cause backpackception!");
+            backpackInventory.RemoveItem(item);
+            ItemDrop.DropItem(item, 1, player.transform.position 
+                                       + player.transform.forward 
+                                       + player.transform.up, player.transform.rotation);
+
+        }
+
+    }
+
     private void BagContentsChanged()
     {
         if (!m_nview.IsValid()) return;
         LoadBagContents();
         UpdateUseVisual();
     }
-    
-    private void LoadBagContents()
+
+    internal void LoadBagContents()
     {
-        string bagAndWorld = ObjectDB.instance.GetPrefabHash(gameObject).ToString() + ZNet.m_world.m_uid;
-        var bagandworld64 = EncodeTo64(bagAndWorld);
-        var base64String = m_nview.GetZDO().GetString(bagandworld64);
+#if UNITY_COMPILEFLAG
+        string bagAndWorld = gameObject.name + ZNet.m_world.m_uid;
+        var bagandworld64 = "backpacks." + EncodeTo64(bagAndWorld);
+        string? base64String = null;
+        var test = Player.m_localPlayer.m_knownTexts.TryGetValue(bagandworld64, out string temp);
+        if (test)
+        {
+            base64String = temp;
+        }
         if (string.IsNullOrEmpty(base64String) && base64String != m_lastDataString) return;
         var pkg = new ZPackage(base64String);
         m_loading = true;
@@ -90,20 +152,31 @@ public class BackPack : Container
         m_loading = false;
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
         m_lastDataString = base64String;
-        
+#endif
         
     }
 
-    private void SavePack()
+    internal void SavePack()
     {
+#if UNITY_COMPILEFLAG
         var zPackage = new ZPackage();
         m_inventory.Save(zPackage);
         var base64 = zPackage.GetBase64();
-        string mUid = ObjectDB.instance.GetPrefabHash(gameObject).ToString() + ZNet.m_world.m_uid;
-        var to64 = EncodeTo64(mUid);
-        m_nview.GetZDO().Set(to64, base64);
+        string mUid = gameObject.name + ZNet.m_world.m_uid;
+        var to64 = "backpacks." + EncodeTo64(mUid);
+        if (Player.m_localPlayer.m_knownTexts.TryGetValue(to64, out string inventory))
+        {
+            Player.m_localPlayer.m_knownTexts.Remove(to64);
+        }
+        Player.m_localPlayer.m_knownTexts.Add(to64,base64);
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
         m_lastDataString = base64;
+        #endif
+    }
+
+    internal static void OnDestruction()
+    {
+        
     }
     
     static public string EncodeTo64(string toEncode)

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 using BepInEx;
 using HarmonyLib;
 using ItemManager;
@@ -10,7 +11,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks";
-        internal const string ModVersion = "0.0.1";
+        internal const string ModVersion = "0.0.4";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -18,9 +19,15 @@ namespace BackPacks
         internal static AssetBundle? eviesBackPacks;
         internal static AssetBundle? backpackDrops;
 #pragma warning restore CS0649
-        
+
         internal static Item? IronBag;
         internal static Item? SilverBag;
+        internal static Item? LeatherBag;
+
+        internal static GameObject? bagTombStone;
+        internal AssetBundle? tombstonebundle;
+        
+        
 
 
         public void Awake()
@@ -31,6 +38,10 @@ namespace BackPacks
 
             SetupIronBag();
             SetupSilverBag();
+            SetupLeatherBag();
+
+            tombstonebundle = LoadAssetBundle("backpackdrop");
+            bagTombStone = tombstonebundle?.LoadAsset<GameObject>("BackPackDropBag");
         }
 
         private void SetupIronBag()
@@ -67,11 +78,36 @@ namespace BackPacks
             SilverBag.RequiredUpgradeItems.Add("Iron", 20);
             SilverBag.RequiredUpgradeItems.Add("LinenThread", 5);
         }
-        
+
+
+        private void SetupLeatherBag()
+        {
+            LeatherBag = new Item("backpacks", "CapeLeatherBackpack", "Assets");
+            //Localization
+            LeatherBag.Name.English("Normal Backpack");
+            LeatherBag.Description.English("An ordinary backpack, can store various items");
+            //Crafting
+            LeatherBag.Crafting.Add(CraftingTable.Workbench, 1);
+            LeatherBag.RequiredItems.Add("LeatherScraps", 30);
+            LeatherBag.RequiredItems.Add("DeerHide", 5);
+            LeatherBag.CraftAmount = 1;
+            //Upgrades
+            LeatherBag.RequiredUpgradeItems.Add("LeatherScraps", 20);
+            LeatherBag.RequiredUpgradeItems.Add("DeerHide", 5);
+        }
         
         public void OnDestroy()
         {
             harmony.UnpatchSelf();
         }
+        
+        internal static AssetBundle? LoadAssetBundle(string bundleName)
+        {
+            var resource = typeof(BackPacks).Assembly.GetManifestResourceNames().Single
+                (s => s.EndsWith(bundleName));
+            using var stream = typeof(BackPacks).Assembly.GetManifestResourceStream(resource);
+            return AssetBundle.LoadFromStream(stream);
+        }
+
     }
 }
