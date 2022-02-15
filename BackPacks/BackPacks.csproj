@@ -274,12 +274,6 @@
     <Compile Include="..\BackPack_UnityProject\Assets\Scripts\BackPack.cs">
       <Link>MonoScripts\BackPack.cs</Link>
     </Compile>
-    <Compile Include="..\BackPack_UnityProject\Assets\Scripts\UniqueId.cs">
-      <Link>MonoScripts\UniqueId.cs</Link>
-    </Compile>
-    <Compile Include="..\BackPack_UnityProject\Assets\Scripts\ValueSetter.cs">
-      <Link>MonoScripts\ValueSetter.cs</Link>
-    </Compile>
     <Compile Include="ModCore.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
