@@ -140,6 +140,7 @@ GameObject:
   - component: {fileID: 7780883477969582707}
   - component: {fileID: 4639921804854212350}
   - component: {fileID: 7071889394534452602}
+  - component: {fileID: 7681291394251052296}
   m_Layer: 12
   m_Name: CapeLeatherBackpack
   m_TagString: Untagged
@@ -2903,6 +2904,21 @@ MonoBehaviour:
       m_trailStartEffect:
         m_effectPrefabs: []
       m_consumeStatusEffect: {fileID: 0}
+--- !u!114 &7681291394251052296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1856056392083161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7881dd6afa04ac42b4a0ee84db04001, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Pack: {fileID: 8793386538634310012}
+  m_nview: {fileID: 7780883477969582707}
+  mGuid: 4f188dc5-232b-4138-8e3e-0e46c6b3669a
 --- !u!1 &297216072713505599
 GameObject:
   m_ObjectHideFlags: 0
@@ -3221,6 +3237,7 @@ GameObject:
   - component: {fileID: 507451764409735940}
   - component: {fileID: 4046809480860764153}
   - component: {fileID: 8793386538634310012}
+  - component: {fileID: 7990615394286648273}
   m_Layer: 0
   m_Name: Box002.001
   m_TagString: Untagged
@@ -3383,6 +3400,22 @@ MonoBehaviour:
   m_nview: {fileID: 0}
   tier: 0
   ItemDataref: {fileID: 7071889394534452602}
+  originalDrop: {fileID: 1856056392083161}
+  MUID: 
+  mGuid: 4910e9c6-78f9-4f3f-a6f0-ede4b4ae1a7c
+--- !u!114 &7990615394286648273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963706580682957440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49df4a12aeb8bf47bb6df2feba87b62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueId: CapeLeatherBackpack_4e44840d-55b7-4b06-bdbc-18cea8b15d75
 --- !u!1 &1476634420462800990
 GameObject:
   m_ObjectHideFlags: 0
