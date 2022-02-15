@@ -64,14 +64,6 @@ public class BackPack : Container
            destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
        }
        InvokeRepeating(nameof(BagContentsChanged), 0f, 1f);
-       if (ItemDataref.m_itemData.m_crafterName == Game.instance.GetPlayerProfile().GetName() || ItemDataref.m_itemData.m_crafterName.IsNullOrWhiteSpace())
-       {
-           ItemDataref.m_itemData.m_crafterName = "GUID-"+Guid.NewGuid().ToString();
-       }
-       else if(ItemDataref.m_itemData.m_crafterName.Contains("GUID-"))
-       {
-           MUID = ItemDataref.m_itemData.m_crafterName;
-       }
 #endif
     }
 
@@ -129,7 +121,7 @@ public class BackPack : Container
     internal void LoadBagContents()
     {
 #if UNITY_COMPILEFLAG
-        string bagAndWorld = MUID + ZNet.m_world.m_uid;
+        string bagAndWorld = gameObject.name + ZNet.m_world.m_uid;
         var bagandworld64 = "backpacks." + EncodeTo64(bagAndWorld);
         string? base64String = null;
         var test = Player.m_localPlayer.m_knownTexts.TryGetValue(bagandworld64, out string temp);
@@ -155,7 +147,7 @@ public class BackPack : Container
         m_inventory.Save(zPackage);
         var base64 = zPackage.GetBase64();
         
-        string mUid = MUID + ZNet.m_world.m_uid;
+        string mUid = gameObject.name + ZNet.m_world.m_uid;
         var to64 = "backpacks." + EncodeTo64(mUid);
         if (Player.m_localPlayer.m_knownTexts.TryGetValue(to64, out string inventory))
         {
