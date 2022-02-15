@@ -26,9 +26,6 @@ namespace BackPacks
 
         internal static GameObject? bagTombStone;
         internal AssetBundle? tombstonebundle;
-        
-        
-
 
         public void Awake()
         {
@@ -42,7 +39,9 @@ namespace BackPacks
 
             tombstonebundle = LoadAssetBundle("backpackdrop");
             bagTombStone = tombstonebundle?.LoadAsset<GameObject>("BackPackDropBag");
+            tombstonebundle?.Unload(false);
         }
+
 
         private void SetupIronBag()
         {
@@ -108,6 +107,6 @@ namespace BackPacks
             using var stream = typeof(BackPacks).Assembly.GetManifestResourceStream(resource);
             return AssetBundle.LoadFromStream(stream);
         }
-
+        
     }
 }

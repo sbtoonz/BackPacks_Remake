@@ -1,5 +1,6 @@
 ﻿#define UNITY_COMPILEFLAG
 using System;
+using BepInEx;
 using UnityEngine;
 
 
@@ -18,6 +19,8 @@ public class BackPack : Container
     [SerializeField] internal BagTier tier;
     internal static BagTier StaticTier;
     [SerializeField] internal ItemDrop ItemDataref;
+    [SerializeField] internal GameObject originalDrop;
+    public string MUID;
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
     private float TotalWeight => m_inventory.GetTotalWeight();
@@ -25,7 +28,12 @@ public class BackPack : Container
     internal static float StaticWeight;
     internal static bool StaticActive;
     internal static Inventory? StaticInventory;
-    #endif
+    
+    
+
+#endif
+    
+
     private new void Awake()
     {
         #if UNITY_COMPILEFLAG
@@ -56,7 +64,15 @@ public class BackPack : Container
            destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
        }
        InvokeRepeating(nameof(BagContentsChanged), 0f, 1f);
-       #endif
+       if (ItemDataref.m_itemData.m_crafterName == Game.instance.GetPlayerProfile().GetName() || ItemDataref.m_itemData.m_crafterName.IsNullOrWhiteSpace())
+       {
+           ItemDataref.m_itemData.m_crafterName = "GUID-"+Guid.NewGuid().ToString();
+       }
+       else if(ItemDataref.m_itemData.m_crafterName.Contains("GUID-"))
+       {
+           MUID = ItemDataref.m_itemData.m_crafterName;
+       }
+#endif
     }
 
     private void OnDisable()
@@ -113,7 +129,7 @@ public class BackPack : Container
     internal void LoadBagContents()
     {
 #if UNITY_COMPILEFLAG
-        string bagAndWorld = gameObject.name + ZNet.m_world.m_uid;
+        string bagAndWorld = MUID + ZNet.m_world.m_uid;
         var bagandworld64 = "backpacks." + EncodeTo64(bagAndWorld);
         string? base64String = null;
         var test = Player.m_localPlayer.m_knownTexts.TryGetValue(bagandworld64, out string temp);
@@ -138,7 +154,8 @@ public class BackPack : Container
         var zPackage = new ZPackage();
         m_inventory.Save(zPackage);
         var base64 = zPackage.GetBase64();
-        string mUid = gameObject.name + ZNet.m_world.m_uid;
+        
+        string mUid = MUID + ZNet.m_world.m_uid;
         var to64 = "backpacks." + EncodeTo64(mUid);
         if (Player.m_localPlayer.m_knownTexts.TryGetValue(to64, out string inventory))
         {
@@ -170,4 +187,5 @@ public class BackPack : Container
         return returnValue;
 
     }
+    public string mGuid = System.Guid.NewGuid().ToString();
 }
