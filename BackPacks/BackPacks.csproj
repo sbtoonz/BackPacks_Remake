@@ -67,9 +67,6 @@
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="BlacksmithTools, Version=2.0.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>Libs\BlacksmithTools.dll</HintPath>
-    </Reference>
     <Reference Include="ExtendedItemDataFramework, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>Libs\ExtendedItemDataFramework.dll</HintPath>
     </Reference>
