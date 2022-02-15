@@ -135,6 +135,75 @@ namespace BackPacks
                 }
             }
         }
+
+
+        [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
+        [HarmonyAfter(new string[]{"GoldenJude_JudesEquipment"})]
+        public static class JudeBagPatch
+        {
+            public static void Postfix(ObjectDB __instance)
+            {
+                if (BackPacks.useJudesBags)
+                {
+                    if (__instance.m_items.Count <= 0 || !__instance.GetItemPrefab("Wood")) return;
+                    var HeavyBag = __instance.GetItemPrefab("BackpackHeavy");
+                    var simpleBag = __instance.GetItemPrefab("BackpackSimple");
+
+                    if (HeavyBag)
+                    {
+                        var heavybackpack =HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject.AddComponent<BackPack>();
+                        heavybackpack.m_width = 5;
+                        heavybackpack.m_height = 3;
+                        heavybackpack.m_name = "Backpack";
+                    }
+
+                    if (simpleBag)
+                    {
+                        var simplebackpack = simpleBag.transform.Find("attach_skin/simpleBackpack").gameObject
+                            .AddComponent<BackPack>();
+
+
+                        simplebackpack.m_width = 3;
+                        simplebackpack.m_height = 2;
+                        simplebackpack.m_name = "Backpack";
+                    }
+                    
+                }
+            }
+        }
+        [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
+        [HarmonyAfter(new string[]{"GoldenJude_JudesEquipment"})]
+        public static class JudeBagOtherPatch
+        {
+            public static void Postfix(ObjectDB __instance)
+            {
+                if (BackPacks.useJudesBags)
+                { 
+                    if (__instance.m_items.Count <= 0 || !__instance.GetItemPrefab("Wood")) return;
+                    var HeavyBag = __instance.GetItemPrefab("BackpackHeavy");
+                    var simpleBag = __instance.GetItemPrefab("BackpackSimple");
+
+                    if (HeavyBag)
+                    {
+                        var heavybackpack =HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject.AddComponent<BackPack>();
+                        heavybackpack.m_width = 5;
+                        heavybackpack.m_height = 3;
+
+                    }
+
+                    if (simpleBag)
+                    {
+                        var simplebackpack = simpleBag.transform.Find("attach_skin/simpleBackpack").gameObject
+                            .AddComponent<BackPack>();
+
+
+                        simplebackpack.m_width = 3;
+                        simplebackpack.m_height = 2;
+                    }
+
+                }
+            }
+        }
         
 
 

@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using ItemManager;
 using UnityEngine;
@@ -8,9 +10,10 @@ using UnityEngine;
 namespace BackPacks
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [BepInDependency("GoldenJude_JudesEquipment", BepInDependency.DependencyFlags.SoftDependency)]
     public class BackPacks : BaseUnityPlugin
     {
-        internal const string ModName = "BackPacks";
+        internal const string ModName = "BackPacks_Remake";
         internal const string ModVersion = "0.0.5";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
@@ -26,7 +29,8 @@ namespace BackPacks
 
         internal static GameObject? bagTombStone;
         internal AssetBundle? tombstonebundle;
-
+        internal static bool useJudesBags;
+        
         public void Awake()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -40,6 +44,23 @@ namespace BackPacks
             tombstonebundle = LoadAssetBundle("backpackdrop");
             bagTombStone = tombstonebundle?.LoadAsset<GameObject>("BackPackDropBag");
             tombstonebundle?.Unload(false);
+        }
+
+        private void Start()
+        {
+            try
+            {
+                var JudeEquip = Chainloader.PluginInfos.First(p => p.Key == "GoldenJude_JudesEquipment");
+                if (JudeEquip.Value.Instance != null)
+                {
+                    useJudesBags = true;
+                    Debug.Log("Found Judes Equipment");
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
 
