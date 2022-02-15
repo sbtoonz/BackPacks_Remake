@@ -141,7 +141,6 @@ GameObject:
   - component: {fileID: 7780883477969582707}
   - component: {fileID: 4639921804854212350}
   - component: {fileID: 7071889394534452602}
-  - component: {fileID: 6551492539602927802}
   m_Layer: 12
   m_Name: CapeSilverBackpack
   m_TagString: Untagged
@@ -2905,21 +2904,6 @@ MonoBehaviour:
       m_trailStartEffect:
         m_effectPrefabs: []
       m_consumeStatusEffect: {fileID: 0}
---- !u!114 &6551492539602927802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856056392083161}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7881dd6afa04ac42b4a0ee84db04001, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Pack: {fileID: 6861090165766539571}
-  m_nview: {fileID: 7780883477969582707}
-  mGuid: c7d9e82c-63cb-4e93-ac4c-579884f6a49b
 --- !u!1 &21554514793050228
 GameObject:
   m_ObjectHideFlags: 0
@@ -2931,8 +2915,6 @@ GameObject:
   - component: {fileID: 5489745863212147120}
   - component: {fileID: 8841636249625243894}
   - component: {fileID: 6861090165766539571}
-  - component: {fileID: 3699246530048308085}
-  - component: {fileID: 8107137817827548313}
   m_Layer: 0
   m_Name: SilverBackpack
   m_TagString: Untagged
@@ -3098,32 +3080,6 @@ MonoBehaviour:
   originalDrop: {fileID: 1856056392083161}
   MUID: 
   mGuid: f761f747-cc18-46d0-8cb9-cc2a86e7c9f8
---- !u!114 &3699246530048308085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 21554514793050228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f49df4a12aeb8bf47bb6df2feba87b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueId: CapeSilverBackpack_7c38e3db-8b9d-4f4e-bc17-2a1150035e30
---- !u!114 &8107137817827548313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 21554514793050228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f49df4a12aeb8bf47bb6df2feba87b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueId: CapeSilverBackpack_5f7d90d5-e47d-4b2b-97ef-2a381f97292f
 --- !u!1 &115381405970783194
 GameObject:
   m_ObjectHideFlags: 0

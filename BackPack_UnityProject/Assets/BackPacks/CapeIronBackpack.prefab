@@ -108,7 +108,6 @@ GameObject:
   - component: {fileID: 19231859088455296}
   - component: {fileID: 7080129522307969019}
   - component: {fileID: 8543478318305907303}
-  - component: {fileID: 3995219554682512911}
   m_Layer: 12
   m_Name: CapeIronBackpack
   m_TagString: Untagged
@@ -2872,21 +2871,6 @@ MonoBehaviour:
       m_trailStartEffect:
         m_effectPrefabs: []
       m_consumeStatusEffect: {fileID: 0}
---- !u!114 &3995219554682512911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1507731321349597}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7881dd6afa04ac42b4a0ee84db04001, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Pack: {fileID: 4325768631031911191}
-  m_nview: {fileID: 19231859088455296}
-  mGuid: ffd02c6f-7317-4c98-8e34-011b2dad251d
 --- !u!1 &1725943086375824
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,7 +3068,6 @@ GameObject:
   - component: {fileID: 7425103682932603759}
   - component: {fileID: 3212628828110129588}
   - component: {fileID: 4325768631031911191}
-  - component: {fileID: 815438340717423003}
   m_Layer: 0
   m_Name: IronBackpack
   m_TagString: Untagged
@@ -3250,19 +3233,6 @@ MonoBehaviour:
   originalDrop: {fileID: 1507731321349597}
   MUID: 
   mGuid: 404bbf92-2ad3-4670-ac4b-f5525f32fa07
---- !u!114 &815438340717423003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 940415863010791273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f49df4a12aeb8bf47bb6df2feba87b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueId: CapeIronBackpack_8124c3b9-f21c-4624-9433-f9fa9c2156e7
 --- !u!1 &1217882088450767655
 GameObject:
   m_ObjectHideFlags: 0
