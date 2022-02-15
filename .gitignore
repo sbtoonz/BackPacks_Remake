@@ -372,3 +372,5 @@ FodyWeavers.xsd
 
 # not the valheim path file
 Environment.props
+
+BackPacks/Libs/ExtendedItemDataFramework.dll
