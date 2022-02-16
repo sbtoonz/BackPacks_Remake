@@ -88,7 +88,7 @@ public class BackPack : Container
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
         if (!InventoryGui.IsVisible()) return;
-        if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.E))
         {
             try
             {
