@@ -95,7 +95,7 @@ namespace BackPacks
             IronBag = new Item("backpacks", "CapeIronBackpackZ", "Assets");
             //Localization
             IronBag.Name.English("Rugged Backpack");
-            IronBag.Description.English("A Rugged backpack, complete with buckles and fine leather straps.");
+            IronBag.Description.English("A Rugged backpack, complete with buckles and fine leather straps, The more you level this bag up the more your storage will increase!");
             //Crafting
             IronBag.Crafting.Add(CraftingTable.Workbench, 1);
             IronBag.RequiredItems.Add("Bronze", 8);
@@ -113,7 +113,7 @@ namespace BackPacks
             SilverBag = new Item("backpacks", "CapeSilverBackpackZ", "Assets");
             //Localization
             SilverBag.Name.English("Fine Backpack");
-            SilverBag.Description.English("A Fine backpack, complete with hand made straps");
+            SilverBag.Description.English("A Fine backpack, complete with hand made straps, The more you level this bag up the more your storage will increase!");
             //Crafting
             SilverBag.Crafting.Add(CraftingTable.Workbench, 1);
             SilverBag.RequiredItems.Add("Silver", 23);
@@ -131,7 +131,7 @@ namespace BackPacks
             LeatherBag = new Item("backpacks", "CapeLeatherBackpackZ", "Assets");
             //Localization
             LeatherBag.Name.English("Normal Backpack");
-            LeatherBag.Description.English("An ordinary backpack, can store various items");
+            LeatherBag.Description.English("An ordinary backpack, can store various items, The more you level this bag up the more your storage will increase!");
             //Crafting
             LeatherBag.Crafting.Add(CraftingTable.Workbench, 1);
             LeatherBag.RequiredItems.Add("LeatherScraps", 30);
