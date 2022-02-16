@@ -20,15 +20,13 @@ public class BackPack : Container
     }
 
     [SerializeField] internal BagTier tier;
-    internal static BagTier StaticTier;
-    [SerializeField] internal ItemDrop ItemDataref;
-    [SerializeField] internal GameObject originalDrop;
-    public string MUID;
+
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
     private float TotalWeight => m_inventory.GetTotalWeight();
-    
+
     internal static bool StaticActive;
+    internal static BagTier StaticTier;
     internal static Inventory? StaticInventory;
 
 #endif
