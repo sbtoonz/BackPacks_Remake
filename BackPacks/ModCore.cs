@@ -65,13 +65,13 @@ namespace BackPacks
             IronBag.Description.English("A Rugged backpack, complete with buckles and fine leather straps.");
             //Crafting
             IronBag.Crafting.Add(CraftingTable.Workbench, 1);
-            IronBag.RequiredItems.Add("Iron", 10);
-            IronBag.RequiredItems.Add("LeatherScraps", 15);
-            IronBag.RequiredItems.Add("LinenThread", 5);
+            IronBag.RequiredItems.Add("Bronze", 8);
+            IronBag.RequiredItems.Add("LeatherScraps", 60);
+            IronBag.RequiredItems.Add("DeerHide", 5);
             IronBag.CraftAmount = 1;
             //Upgrades
-            IronBag.RequiredUpgradeItems.Add("Iron", 20);
-            IronBag.RequiredUpgradeItems.Add("LinenThread", 5);
+            IronBag.RequiredUpgradeItems.Add("Bronze", 20);
+            IronBag.RequiredUpgradeItems.Add("LeatherScraps", 5);
             
         }
 
@@ -83,13 +83,13 @@ namespace BackPacks
             SilverBag.Description.English("A Fine backpack, complete with hand made straps");
             //Crafting
             SilverBag.Crafting.Add(CraftingTable.Workbench, 1);
-            SilverBag.RequiredItems.Add("Iron", 10);
-            SilverBag.RequiredItems.Add("LeatherScraps", 15);
-            SilverBag.RequiredItems.Add("LinenThread", 5);
+            SilverBag.RequiredItems.Add("Silver", 23);
+            SilverBag.RequiredItems.Add("LeatherScraps", 60);
+            SilverBag.RequiredItems.Add("WolfPelt", 7);
             SilverBag.CraftAmount = 1;
             //Upgrades
-            SilverBag.RequiredUpgradeItems.Add("Iron", 20);
-            SilverBag.RequiredUpgradeItems.Add("LinenThread", 5);
+            SilverBag.RequiredUpgradeItems.Add("Silver", 20);
+            SilverBag.RequiredUpgradeItems.Add("WolfPelt", 5);
         }
 
 
