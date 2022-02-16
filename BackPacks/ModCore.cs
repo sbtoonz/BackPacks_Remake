@@ -27,9 +27,6 @@ namespace BackPacks
         internal static Item? IronBag;
         internal static Item? SilverBag;
         internal static Item? LeatherBag;
-
-        internal static GameObject? bagTombStone;
-        internal AssetBundle? tombstonebundle;
         internal static bool useJudesBags;
         
         public void Awake()
@@ -41,10 +38,6 @@ namespace BackPacks
             SetupIronBag();
             SetupSilverBag();
             SetupLeatherBag();
-
-            tombstonebundle = LoadAssetBundle("backpackdrop");
-            bagTombStone = tombstonebundle?.LoadAsset<GameObject>("BackPackDropBag");
-            tombstonebundle?.Unload(false);
         }
 
         private void Start()
@@ -66,7 +59,7 @@ namespace BackPacks
 
         private void SetupIronBag()
         {
-            IronBag = new Item("backpacks", "CapeIronBackpack", "Assets");
+            IronBag = new Item("backpacks", "CapeIronBackpackZ", "Assets");
             //Localization
             IronBag.Name.English("Rugged Backpack");
             IronBag.Description.English("A Rugged backpack, complete with buckles and fine leather straps.");
@@ -84,7 +77,7 @@ namespace BackPacks
 
         private void SetupSilverBag()
         {
-            SilverBag = new Item("backpacks", "CapeSilverBackpack", "Assets");
+            SilverBag = new Item("backpacks", "CapeSilverBackpackZ", "Assets");
             //Localization
             SilverBag.Name.English("Fine Backpack");
             SilverBag.Description.English("A Fine backpack, complete with hand made straps");
@@ -102,7 +95,7 @@ namespace BackPacks
 
         private void SetupLeatherBag()
         {
-            LeatherBag = new Item("backpacks", "CapeLeatherBackpack", "Assets");
+            LeatherBag = new Item("backpacks", "CapeLeatherBackpackZ", "Assets");
             //Localization
             LeatherBag.Name.English("Normal Backpack");
             LeatherBag.Description.English("An ordinary backpack, can store various items");
