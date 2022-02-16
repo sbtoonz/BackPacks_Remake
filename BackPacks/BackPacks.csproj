@@ -276,6 +276,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ThunderStore_Release\manifest.json" />
+    <Content Include="ThunderStore_Release\README.md" />
     <None Include="Assets\backpackdrop" />
     <EmbeddedResource Include="..\BackPack_UnityProject\Assets\AssetBundles\backpacks">
       <Link>Assets\backpacks</Link>
@@ -286,6 +288,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ThunderStore_Release\plugins" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -304,5 +309,8 @@
 	 </Target>
 	 <Target Name="Copy" AfterTargets="Build">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
+	</Target>
+	 <Target Name="ThunderStore" AfterTargets="Build">
+     <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;ThunderStore_Release\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 </Project>

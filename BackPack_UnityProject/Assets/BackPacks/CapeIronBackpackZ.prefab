@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 7080129522307969019}
   - component: {fileID: 8543478318305907303}
   m_Layer: 12
-  m_Name: CapeIronBackpack
+  m_Name: CapeIronBackpackZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2657,7 +2657,7 @@ MonoBehaviour:
       m_dlc: 
       m_itemType: 17
       m_icons:
-      - {fileID: 21300000, guid: c95f0a618e378904b9436f51846816ff, type: 3}
+      - {fileID: 21300000, guid: 120013bf833985f439b8213a0c763acd, type: 3}
       m_attachOverride: 0
       m_description: $item_iron_backpack_description
       m_maxStackSize: 1
@@ -3229,10 +3229,6 @@ MonoBehaviour:
   m_destroyedLootPrefab: {fileID: 0}
   m_nview: {fileID: 0}
   tier: 1
-  ItemDataref: {fileID: 8543478318305907303}
-  originalDrop: {fileID: 1507731321349597}
-  MUID: 
-  mGuid: 404bbf92-2ad3-4670-ac4b-f5525f32fa07
 --- !u!1 &1217882088450767655
 GameObject:
   m_ObjectHideFlags: 0
