@@ -23,27 +23,25 @@ namespace BackPacks
                 {
                     List<ItemDrop.ItemData> items = __instance.GetAllItems();
                     var player = Player.m_localPlayer;
-                    foreach (var item in items.Where(item => item.m_shared.m_name.Contains("backpack")))
-                    {
-                        EjectBackpack(item, player, __instance);
-                        break;
-                    }
-
-                    items = __instance.GetAllItems();
-                    foreach (var item in items.Where(item => item.m_shared.m_name.Contains("Backpack")))
+                    foreach (var item in items.Where(item => item.m_shared.m_name.Contains("ackpack")))
                     {
                         EjectBackpack(item, player, __instance);
                         break;
                     }
                 }
 
-                if (__instance.GetAllItems().Exists(i => i.m_shared.m_name.Contains("backpack") 
-                                                         || i.m_shared.m_name.Contains("Backpack")))
+                if (__instance.GetAllItems().Exists(i => i.m_shared.m_name.Contains("ackpack")))
                 {
                     var text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
                         .GetComponent<Text>();
-                    if (Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("Backpack") ||
-                        Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("backpack"))
+                    if (Player.m_localPlayer.m_shoulderItem == null)
+                    {
+                        text.gameObject.SetActive(false);
+                        return;
+                    }
+                     
+                    var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
+                    if (flag)
                     {
                         text.gameObject.SetActive(true);
                         text.fontSize = 16;
@@ -53,6 +51,10 @@ namespace BackPacks
                             .font;
                         text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
                         
+                    }
+                    else
+                    {
+                        text.gameObject.SetActive(false);
                     }
                 }
                 

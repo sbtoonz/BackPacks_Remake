@@ -66,9 +66,9 @@ public class BackPack : Container
        {
            return;
        }
-       m_inventory.m_width += backPackData.ItemData.m_quality;
+       m_inventory.m_width += backPackData.ItemData.m_quality/2;
        if (m_inventory.m_width >= 6) m_inventory.m_width = 6;
-       m_inventory.m_height += backPackData.ItemData.m_quality;
+       m_inventory.m_height += backPackData.ItemData.m_quality/2;
        if (m_inventory.m_height >= 8) m_inventory.m_height = 8;
 #endif
     }
