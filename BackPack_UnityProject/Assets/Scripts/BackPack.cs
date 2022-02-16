@@ -1,5 +1,7 @@
 ﻿#define UNITY_COMPILEFLAG
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using ExtendedItemDataFramework;
 using UnityEngine;
 
@@ -60,9 +62,14 @@ public class BackPack : Container
        {
            destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
        }
-       LoadBagContents();
-       UpdateUseVisual();
 #endif
+    }
+
+    private void OnEnable()
+    {
+        if(Player.m_localPlayer ==null) return;
+        
+        StartCoroutine(BagContentsChanged(0f));
     }
 
     private void OnDisable()
@@ -73,6 +80,7 @@ public class BackPack : Container
         m_nview.Unregister("OpenRespons");
         m_nview.Unregister("RequestTakeAll");
         m_nview.Unregister("TakeAllRespons");
+        StopCoroutine(BagContentsChanged(0f));
         #endif
     }
 
@@ -108,10 +116,22 @@ public class BackPack : Container
         }
 #endif
     }
-    private void BagContentsChanged()
+    /*private void BagContentsChanged()
     {
         if (!m_nview.IsValid()) return;
+        LoadBagContents();
         UpdateUseVisual();
+    }*/
+
+    private IEnumerator BagContentsChanged(float time)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(time);
+            if (!m_nview.IsValid()) break;
+            LoadBagContents();
+            UpdateUseVisual();
+        }
     }
 
     internal void LoadBagContents()
@@ -158,11 +178,6 @@ public class BackPack : Container
         
         Player.m_localPlayer.m_shoulderItem.Extended().Save();
 #endif
-    }
-
-    internal static void OnDestruction()
-    {
-        
     }
     
     public class BackPackData : BaseExtendedItemComponent
