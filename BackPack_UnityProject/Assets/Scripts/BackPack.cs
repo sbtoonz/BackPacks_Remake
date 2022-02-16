@@ -61,6 +61,15 @@ public class BackPack : Container
        {
            destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
        }
+       SavePack();
+       if (Player.m_localPlayer.m_shoulderItem?.Extended().GetComponent<BackPackData>() is not {} backPackData)
+       {
+           return;
+       }
+       m_inventory.m_width += backPackData.ItemData.m_quality;
+       if (m_inventory.m_width >= 6) m_inventory.m_width = 6;
+       m_inventory.m_height += backPackData.ItemData.m_quality;
+       if (m_inventory.m_height >= 8) m_inventory.m_height = 8;
 #endif
     }
 
@@ -183,7 +192,6 @@ public class BackPack : Container
     {
         public string packData = "";
         public Inventory? inventory;
-
         public BackPackData(ExtendedItemData parent) : base(typeof(BackPackData).AssemblyQualifiedName, parent) { }
 
         public override string Serialize() => packData;
