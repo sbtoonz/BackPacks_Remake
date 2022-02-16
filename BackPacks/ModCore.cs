@@ -15,7 +15,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.0.5";
+        internal const string ModVersion = "0.0.6";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -55,7 +55,6 @@ namespace BackPacks
                 if (JudeEquip.Value.Instance != null)
                 {
                     useJudesBags = true;
-                    Debug.Log("Found Judes Equipment");
                 }
             }
             catch (Exception)
