@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 
@@ -9,21 +10,13 @@ namespace BackPacks
 {
     public class Patches
     {
-        [HarmonyPatch(typeof(Player), nameof(Player.GetKnownTexts))]
-        private static class FixCompendium
-        {
-            private static void Postfix(ref List<KeyValuePair<string, string>> __result)
-            {
-                __result = __result.Where(p => !p.Key.StartsWith("backpacks.")).ToList();
-            }
-        }
-
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetTotalWeight))]
         [HarmonyPriority(Priority.Last)]
         private static class GetTotalWeightPatch
         {
             private static void Postfix(Inventory __instance, ref float __result)
             {
+                /*
                 if (!Player.m_localPlayer) return;
                 if (__instance.m_name == BackPack.StaticInventory?.m_name)
                 {
@@ -38,10 +31,24 @@ namespace BackPacks
                 if (__instance != Player.m_localPlayer.GetInventory()) return;
                 if (new StackFrame(2).ToString().IndexOf("OverrideGetTotalWeight", StringComparison.Ordinal) > -1) return;
                 if(BackPack.StaticActive) __result += BackPack.StaticWeight;
-
+                */
             }
         }
 
+        [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetWeight))]
+        [HarmonyPriority(Priority.Last)]
+        private static class GetWeightPatch
+        {
+            private static void Postfix(ItemDrop.ItemData __instance, ref float __result)
+            {
+                if (__instance.Extended()?.GetComponent<BackPack.BackPackData>() is { } backPackData)
+                {
+                    __result += backPackData.inventory.GetAllItems().Sum(backPackItem => backPackItem.GetWeight());
+                }
+            }
+        }
+
+        /*
         [HarmonyPatch(typeof(Player), "OnDeath")]
         private static class OnDeath_Patch
         {
@@ -110,13 +117,15 @@ namespace BackPacks
                 }
             }
         }
+        */
 
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.IsTeleportable))]
         private static class PatchTeleportable
         {
             [HarmonyPostfix]
-            public static void Postfix(ref bool __result)
+            public static void Postfix(Inventory __instance, ref bool __result)
             {
+                /*
                 if (BackPack.StaticActive)
                 {
                     if(BackPack.StaticInventory!.m_inventory.Any(i => i.m_shared.m_teleportable == false)) __result = false;
@@ -133,6 +142,18 @@ namespace BackPacks
                 {
                     __result = false;
                 }
+                */
+                foreach (ItemDrop.ItemData item in __instance.GetAllItems())
+                {
+                    if (item.Extended()?.GetComponent<BackPack.BackPackData>() is { } backPackData)
+                    {
+                        if (backPackData.inventory.GetAllItems().Any(i => !i.m_shared.m_teleportable))
+                        {
+                            __result = false;
+                        }
+                    }
+                }
+
             }
         }
 

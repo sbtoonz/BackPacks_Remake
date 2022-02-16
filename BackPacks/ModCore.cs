@@ -10,6 +10,7 @@ using UnityEngine;
 namespace BackPacks
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [BepInDependency("randyknapp.mods.extendeditemdataframework")]
     [BepInDependency("GoldenJude_JudesEquipment", BepInDependency.DependencyFlags.SoftDependency)]
     public class BackPacks : BaseUnityPlugin
     {

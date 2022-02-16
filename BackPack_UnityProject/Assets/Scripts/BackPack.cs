@@ -1,5 +1,6 @@
 ﻿#define UNITY_COMPILEFLAG
 using System;
+using ExtendedItemDataFramework;
 using UnityEngine;
 
 
@@ -24,11 +25,8 @@ public class BackPack : Container
     private bool IsActive => gameObject.activeInHierarchy;
     private float TotalWeight => m_inventory.GetTotalWeight();
     
-    internal static float StaticWeight;
     internal static bool StaticActive;
     internal static Inventory? StaticInventory;
-    
-    
 
 #endif
     
@@ -62,7 +60,8 @@ public class BackPack : Container
        {
            destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
        }
-       InvokeRepeating(nameof(BagContentsChanged), 0f, 1f);
+       LoadBagContents();
+       UpdateUseVisual();
 #endif
     }
 
@@ -94,7 +93,6 @@ public class BackPack : Container
             }
         }
         StaticActive = IsActive;
-        StaticWeight = TotalWeight;
         StaticInventory = m_inventory;
         StaticTier = tier;
         #endif
@@ -113,28 +111,27 @@ public class BackPack : Container
     private void BagContentsChanged()
     {
         if (!m_nview.IsValid()) return;
-        LoadBagContents();
         UpdateUseVisual();
     }
 
     internal void LoadBagContents()
     {
 #if UNITY_COMPILEFLAG
-        string bagAndWorld = gameObject.name + ZNet.m_world.m_uid;
-        var bagandworld64 = "backpacks." + EncodeTo64(bagAndWorld);
-        string? base64String = null;
-        var test = Player.m_localPlayer.m_knownTexts.TryGetValue(bagandworld64, out string temp);
-        if (test)
+        if (Player.m_localPlayer.m_shoulderItem?.Extended().GetComponent<BackPackData>() is not {} backPackData)
         {
-            base64String = temp;
+            return;
         }
-        if (string.IsNullOrEmpty(base64String) && base64String != m_lastDataString) return;
-        var pkg = new ZPackage(base64String);
+
+        if (string.IsNullOrEmpty(backPackData.packData) || backPackData.packData == m_lastDataString)
+        {
+            return;
+        }
+        var pkg = new ZPackage(backPackData.packData);
         m_loading = true;
         m_inventory.Load(pkg);
         m_loading = false;
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
-        m_lastDataString = base64String;
+        m_lastDataString = backPackData.packData;
 #endif
         
     }
@@ -142,20 +139,25 @@ public class BackPack : Container
     internal void SavePack()
     {
 #if UNITY_COMPILEFLAG
+        if (Player.m_localPlayer.m_shoulderItem?.Extended().GetComponent<BackPackData>() is not {} backPackData)
+        {
+            if (Player.m_localPlayer.m_shoulderItem is null)
+            {
+                return;
+            }
+
+            backPackData = Player.m_localPlayer.m_shoulderItem.Extended().AddComponent<BackPackData>();
+        }
+
         var zPackage = new ZPackage();
         m_inventory.Save(zPackage);
-        var base64 = zPackage.GetBase64();
         
-        string mUid = gameObject.name + ZNet.m_world.m_uid;
-        var to64 = "backpacks." + EncodeTo64(mUid);
-        if (Player.m_localPlayer.m_knownTexts.TryGetValue(to64, out string inventory))
-        {
-            Player.m_localPlayer.m_knownTexts.Remove(to64);
-        }
-        Player.m_localPlayer.m_knownTexts.Add(to64,base64);
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
-        m_lastDataString = base64;
-        #endif
+        m_lastDataString = backPackData.packData = zPackage.GetBase64();
+        backPackData.inventory = m_inventory;
+        
+        Player.m_localPlayer.m_shoulderItem.Extended().Save();
+#endif
     }
 
     internal static void OnDestruction()
@@ -163,20 +165,26 @@ public class BackPack : Container
         
     }
     
-    static public string EncodeTo64(string toEncode)
-
+    public class BackPackData : BaseExtendedItemComponent
     {
+        public string packData = "";
+        public Inventory inventory;
 
-        byte[] toEncodeAsBytes
+        public BackPackData(ExtendedItemData parent) : base(typeof(BackPackData).AssemblyQualifiedName, parent) { }
 
-            = System.Text.ASCIIEncoding.ASCII.GetBytes(toEncode);
+        public override string Serialize() => packData;
+        public override void Deserialize(string data)
+        {
+            packData = data;
 
-        string returnValue
+            inventory = new Inventory("", null, 100, 100);
+            if (data != "")
+            {
+                var pkg = new ZPackage(data);
+                inventory.Load(pkg);
+            }
+        }
 
-            = System.Convert.ToBase64String(toEncodeAsBytes);
-
-        return returnValue;
-
+        public override BaseExtendedItemComponent Clone() => (BaseExtendedItemComponent)MemberwiseClone();
     }
-    public string mGuid = System.Guid.NewGuid().ToString();
 }

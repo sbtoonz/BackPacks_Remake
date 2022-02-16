@@ -68,7 +68,7 @@
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="ExtendedItemDataFramework, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>Libs\ExtendedItemDataFramework.dll</HintPath>
+      <HintPath>$(GamePath)\BepInEx\plugins\ExtendedItemDataFramework.dll</HintPath>
     </Reference>
     <Reference Include="ItemManager, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>Libs\ItemManager.dll</HintPath>
@@ -281,7 +281,6 @@
       <Link>Assets\backpacks</Link>
     </EmbeddedResource>
     <Content Include="ILRepack.targets" />
-    <Content Include="Libs\ExtendedItemDataFramework.dll" />
     <Content Include="Libs\ItemManager.dll" />
     <Content Include="Libs\ServerSync.dll" />
   </ItemGroup>
