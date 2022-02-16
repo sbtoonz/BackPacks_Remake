@@ -10,7 +10,7 @@ using UnityEngine;
 public class BackPack : Container
 {
     [Serializable]
-    internal enum BagTier
+    public enum BagTier
     {
         Leather,
         Iron,
@@ -19,7 +19,7 @@ public class BackPack : Container
         UnKnown
     }
 
-    [SerializeField] internal BagTier tier;
+    [SerializeField] internal BagTier tier = BagTier.UnKnown;
 
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
@@ -124,13 +124,6 @@ public class BackPack : Container
         }
 #endif
     }
-    /*private void BagContentsChanged()
-    {
-        if (!m_nview.IsValid()) return;
-        LoadBagContents();
-        UpdateUseVisual();
-    }*/
-
     private IEnumerator BagContentsChanged(float time)
     {
         while (true)
@@ -160,8 +153,9 @@ public class BackPack : Container
         m_loading = false;
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
         m_lastDataString = backPackData.packData;
+        tier = backPackData.Tier;
 #endif
-        
+
     }
 
     internal void SavePack()
@@ -179,7 +173,7 @@ public class BackPack : Container
 
         var zPackage = new ZPackage();
         m_inventory.Save(zPackage);
-        
+        backPackData.Tier = tier;
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
         m_lastDataString = backPackData.packData = zPackage.GetBase64();
         backPackData.inventory = m_inventory;
@@ -192,6 +186,7 @@ public class BackPack : Container
     {
         public string packData = "";
         public Inventory? inventory;
+        public BagTier Tier;
         public BackPackData(ExtendedItemData parent) : base(typeof(BackPackData).AssemblyQualifiedName, parent) { }
 
         public override string Serialize() => packData;

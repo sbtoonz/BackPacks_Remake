@@ -3,8 +3,10 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
+using BepInEx.Configuration;
 using HarmonyLib;
 using ItemManager;
+using ServerSync;
 using UnityEngine;
 
 namespace BackPacks
@@ -29,6 +31,15 @@ namespace BackPacks
         internal static Item? LeatherBag;
         internal static bool useJudesBags;
         
+        ServerSync.ConfigSync configSync = new ServerSync.ConfigSync(ModGUID) 
+            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+        
+        internal static ConfigEntry<bool>? AlterCarryWeight;
+        internal static ConfigEntry<float>? CarryModifierLeather;
+        internal static ConfigEntry<float>? CarryModifierIron;
+        internal static ConfigEntry<float>? CarryModifierSilver;
+        internal static ConfigEntry<float>? CarryModifierUnKnown;
+        private static ConfigEntry<bool> serverConfigLocked = null!;
         public void Awake()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -38,6 +49,8 @@ namespace BackPacks
             SetupIronBag();
             SetupSilverBag();
             SetupLeatherBag();
+            LoadConfigs();
+            
         }
 
         private void Start()
@@ -56,7 +69,27 @@ namespace BackPacks
             }
         }
 
+        private void LoadConfigs()
+        {
+            serverConfigLocked = config("1 - General", "Lock Configuration", true, "If on, the configuration is locked and can be changed by server admins only.");
+            AlterCarryWeight = config("General", "Alter Carry Weight", false,
+                "Set this to true to edit the carry weight of the bags by a multiplier");
+            CarryModifierLeather = config("Carry Modifiers", "Leather Modifier", 0.00f,
+                "Set this value to impact the weight of your bag setting to .5 will make your bag weight half as much." +
+                "Setting to 1.5 will make your bag weight 150% more than normal");
+            CarryModifierIron = config("Carry Modifiers", "Iron Modifier", 0.00f,
+                "Set this value to impact the weight of your bag setting to .5 will make your bag weight half as much." +
+                "Setting to 1.5 will make your bag weight 150% more than normal");
+            CarryModifierSilver = config("Carry Modifiers", "Silver Modifier", 0.00f,
+                "Set this value to impact the weight of your bag setting to .5 will make your bag weight half as much." +
+                "Setting to 1.5 will make your bag weight 150% more than normal");
+            CarryModifierUnKnown = config("Carry Modifiers", "UnKnown Modifier", 0.00f,
+                "Set this value to impact the weight of your bag setting to .5 will make your bag weight half as much." +
+                "Setting to 1.5 will make your bag weight 150% more than normal, This is the value used on Jude's bags if you have his mod installed");
 
+            configSync.AddLockingConfigEntry(serverConfigLocked);
+        }
+        
         private void SetupIronBag()
         {
             IronBag = new Item("backpacks", "CapeIronBackpackZ", "Assets");
@@ -121,6 +154,18 @@ namespace BackPacks
             using var stream = typeof(BackPacks).Assembly.GetManifestResourceStream(resource);
             return AssetBundle.LoadFromStream(stream);
         }
+        
+        ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
+        {
+            ConfigEntry<T> configEntry = Config.Bind(group, name, value, description);
+
+            SyncedConfigEntry<T> syncedConfigEntry = configSync.AddConfigEntry(configEntry);
+            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
+
+            return configEntry;
+        }
+
+        ConfigEntry<T> config<T>(string group, string name, T value, string description, bool synchronizedSetting = true) => config(group, name, value, new ConfigDescription(description), synchronizedSetting);
         
     }
 }
