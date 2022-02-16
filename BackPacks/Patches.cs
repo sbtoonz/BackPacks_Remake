@@ -135,6 +135,9 @@ namespace BackPacks
         {
             public static void Postfix(ObjectDB __instance)
             {
+                if (__instance.m_StatusEffects.Count <= 0) return;
+                __instance.m_StatusEffects.Add(BackPacks.CarryStat);
+                var SE = __instance.GetStatusEffect(BackPacks.CarryStat?.m_name);
                 if (BackPacks.useJudesBags)
                 {
                     if (__instance.m_items.Count <= 0 || !__instance.GetItemPrefab("Wood")) return;
@@ -148,6 +151,13 @@ namespace BackPacks
                         heavybackpack.m_width = 5;
                         heavybackpack.m_height = 3;
                         heavybackpack.m_name = "Backpack";
+                        
+                        var ID = HeavyBag.gameObject.GetComponent<ItemDrop>();
+                        if (BackPacks.AddCarryBonus!.Value)
+                        {
+                            ID.m_itemData.m_shared.m_equipStatusEffect = SE;
+                        }
+                        if (BackPacks.HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = BackPacks.MoveModifierUnKnown!.Value;
                     }
 
                     if (simpleBag)
@@ -159,9 +169,23 @@ namespace BackPacks
                         simplebackpack.m_width = 3;
                         simplebackpack.m_height = 2;
                         simplebackpack.m_name = "Backpack";
+                        var ID = simpleBag.gameObject.GetComponent<ItemDrop>();
+                        if (BackPacks.AddCarryBonus!.Value)
+                        {
+                            ID.m_itemData.m_shared.m_equipStatusEffect = SE;
+                        }
+                        if (BackPacks.HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = BackPacks.MoveModifierUnKnown!.Value;
                     }
                     
                 }
+
+                if (!BackPacks.AddCarryBonus!.Value) return;
+                var IronBag = __instance.GetItemPrefab("CapeIronBackpackZ");
+                var LeatherBag = __instance.GetItemPrefab("CapeSilverBackpackZ");
+                var SilverBag = __instance.GetItemPrefab("CapeLeatherBackpackZ");
+                IronBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
+                LeatherBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
+                SilverBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
             }
         }
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
@@ -170,6 +194,9 @@ namespace BackPacks
         {
             public static void Postfix(ObjectDB __instance)
             {
+                if (__instance.m_StatusEffects.Count <= 0) return;
+                __instance.m_StatusEffects.Add(BackPacks.CarryStat);
+                var SE = __instance.GetStatusEffect(BackPacks.CarryStat?.m_name);
                 if (BackPacks.useJudesBags)
                 { 
                     if (__instance.m_items.Count <= 0 || !__instance.GetItemPrefab("Wood")) return;
@@ -181,6 +208,12 @@ namespace BackPacks
                         var heavybackpack =HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject.AddComponent<BackPack>();
                         heavybackpack.m_width = 5;
                         heavybackpack.m_height = 3;
+                        var ID = HeavyBag.gameObject.GetComponent<ItemDrop>();
+                        if (BackPacks.AddCarryBonus!.Value)
+                        {
+                            ID.m_itemData.m_shared.m_equipStatusEffect = SE;
+                        }
+                        if (BackPacks.HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = BackPacks.MoveModifierUnKnown!.Value;
 
                     }
 
@@ -192,9 +225,25 @@ namespace BackPacks
 
                         simplebackpack.m_width = 3;
                         simplebackpack.m_height = 2;
+                        var ID = simpleBag.gameObject.GetComponent<ItemDrop>();
+                        if (BackPacks.AddCarryBonus!.Value)
+                        {
+                            ID.m_itemData.m_shared.m_equipStatusEffect = SE;
+                        }
+                        if (BackPacks.HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = BackPacks.MoveModifierUnKnown!.Value;
                     }
 
                 }
+                
+                
+                
+                if (!BackPacks.AddCarryBonus!.Value) return;
+                var IronBag = __instance.GetItemPrefab("CapeIronBackpackZ");
+                var LeatherBag = __instance.GetItemPrefab("CapeSilverBackpackZ");
+                var SilverBag = __instance.GetItemPrefab("CapeLeatherBackpackZ");
+                IronBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
+                LeatherBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
+                SilverBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
             }
         }
         
