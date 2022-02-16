@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1115419872
+CRC: 3471719622
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 682252a54fdd50e09689c50a252ab6d6
+    Hash: a3cf658308351d58da4d1d98c58d4137
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 26e4a86890907ccff3894d86b4551a44
+    Hash: e24417ee3b2fe31c62668453b8ce35e5
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -53,7 +53,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/BackPacks/CapeIronBackpack.prefab
-- Assets/BackPacks/CapeSilverBackpack.prefab
-- Assets/BackPacks/CapeLeatherBackpack.prefab
+- Assets/BackPacks/CapeIronBackpackZ.prefab
+- Assets/BackPacks/CapeSilverBackpackZ.prefab
+- Assets/BackPacks/CapeLeatherBackpackZ.prefab
 Dependencies: []
