@@ -30,7 +30,7 @@ namespace BackPacks
                     }
                 }
 
-                if (__instance.GetAllItems().Exists(i => i.m_shared.m_name.Contains("ackpack")))
+                if (__instance.GetAllItems().Exists(i => i.m_shared.m_name.Contains("ackpack")) && __instance.m_name == Player.m_localPlayer.m_inventory.m_name)
                 {
                     var text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
                         .GetComponent<Text>();
