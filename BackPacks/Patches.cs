@@ -5,6 +5,7 @@ using System.Linq;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BackPacks
 {
@@ -35,6 +36,26 @@ namespace BackPacks
                         break;
                     }
                 }
+
+                if (__instance.GetAllItems().Exists(i => i.m_shared.m_name.Contains("backpack") 
+                                                         || i.m_shared.m_name.Contains("Backpack")))
+                {
+                    var text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
+                        .GetComponent<Text>();
+                    if (Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("Backpack") ||
+                        Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("backpack"))
+                    {
+                        text.gameObject.SetActive(true);
+                        text.fontSize = 16;
+                        text.horizontalOverflow = HorizontalWrapMode.Wrap;
+                        text.verticalOverflow = VerticalWrapMode.Overflow;
+                        text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
+                            .font;
+                        text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
+                        
+                    }
+                }
+                
             }
         }
 
