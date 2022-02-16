@@ -46,7 +46,7 @@ namespace BackPacks
             {
                 if (__instance.Extended()?.GetComponent<BackPack.BackPackData>() is { } backPackData)
                 {
-                    __result += backPackData.inventory.GetAllItems().Sum(backPackItem => backPackItem.GetWeight());
+                    __result += backPackData.inventory!.GetAllItems().Sum(backPackItem => backPackItem.GetWeight());
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace BackPacks
                 {
                     if (item.Extended()?.GetComponent<BackPack.BackPackData>() is { } backPackData)
                     {
-                        if (backPackData.inventory.GetAllItems().Any(i => !i.m_shared.m_teleportable))
+                        if (backPackData.inventory!.GetAllItems().Any(i => !i.m_shared.m_teleportable))
                         {
                             __result = false;
                         }
@@ -159,7 +159,8 @@ namespace BackPacks
 
                     if (HeavyBag)
                     {
-                        var heavybackpack =HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject.AddComponent<BackPack>();
+                        var heavybackpack = HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject
+                            .AddComponent<BackPack>();
                         heavybackpack.m_width = 5;
                         heavybackpack.m_height = 3;
                         heavybackpack.m_name = "Backpack";

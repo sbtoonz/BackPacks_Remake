@@ -276,7 +276,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\backpackdrop" />
+    <None Include="Assets\backpackdrop" />
     <EmbeddedResource Include="..\BackPack_UnityProject\Assets\AssetBundles\backpacks">
       <Link>Assets\backpacks</Link>
     </EmbeddedResource>
