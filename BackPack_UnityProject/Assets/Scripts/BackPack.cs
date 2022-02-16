@@ -1,8 +1,9 @@
 ﻿#define UNITY_COMPILEFLAG
 using System;
 using System.Collections;
-using System.Collections.Generic;
+#if UNITY_COMPILEFLAG
 using ExtendedItemDataFramework;
+#endif
 using UnityEngine;
 
 
@@ -179,11 +180,11 @@ public class BackPack : Container
         Player.m_localPlayer.m_shoulderItem.Extended().Save();
 #endif
     }
-    
+#if UNITY_COMPILEFLAG
     public class BackPackData : BaseExtendedItemComponent
     {
         public string packData = "";
-        public Inventory inventory;
+        public Inventory? inventory;
 
         public BackPackData(ExtendedItemData parent) : base(typeof(BackPackData).AssemblyQualifiedName, parent) { }
 
@@ -202,4 +203,5 @@ public class BackPack : Container
 
         public override BaseExtendedItemComponent Clone() => (BaseExtendedItemComponent)MemberwiseClone();
     }
+#endif
 }
