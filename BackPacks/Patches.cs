@@ -16,7 +16,7 @@ namespace BackPacks
         {
             private static void Postfix(Inventory __instance, ref float __result)
             {
-                /*
+                
                 if (!Player.m_localPlayer) return;
                 if (__instance.m_name == BackPack.StaticInventory?.m_name)
                 {
@@ -27,11 +27,14 @@ namespace BackPacks
                         EjectBackpack(item, player, __instance);
                         break;
                     }
+
+                    items = __instance.GetAllItems();
+                    foreach (var item in items.Where(item => item.m_shared.m_name.Contains("Backpack")))
+                    {
+                        EjectBackpack(item, player, __instance);
+                        break;
+                    }
                 }
-                if (__instance != Player.m_localPlayer.GetInventory()) return;
-                if (new StackFrame(2).ToString().IndexOf("OverrideGetTotalWeight", StringComparison.Ordinal) > -1) return;
-                if(BackPack.StaticActive) __result += BackPack.StaticWeight;
-                */
             }
         }
 
@@ -48,6 +51,8 @@ namespace BackPacks
             }
         }
 
+        
+        //Todo: Add some kind of drop content logic
         /*
         [HarmonyPatch(typeof(Player), "OnDeath")]
         private static class OnDeath_Patch
@@ -125,24 +130,6 @@ namespace BackPacks
             [HarmonyPostfix]
             public static void Postfix(Inventory __instance, ref bool __result)
             {
-                /*
-                if (BackPack.StaticActive)
-                {
-                    if(BackPack.StaticInventory!.m_inventory.Any(i => i.m_shared.m_teleportable == false)) __result = false;
-                }
-
-                if (!Player.m_localPlayer.GetInventory()
-                        .ContainsItem(BackPacks.IronBag?.Prefab.GetComponent<ItemDrop>().m_itemData) && !Player
-                        .m_localPlayer.GetInventory()
-                        .ContainsItem(BackPacks.SilverBag?.Prefab.GetComponent<ItemDrop>().m_itemData)) return;
-                {
-                    if(BackPack.StaticInventory!.m_inventory.Any(i => i.m_shared.m_teleportable == false)) __result = false;
-                }
-                if (Player.m_localPlayer.GetInventory().m_inventory.Any(i=>i.m_shared.m_teleportable == false))
-                {
-                    __result = false;
-                }
-                */
                 foreach (ItemDrop.ItemData item in __instance.GetAllItems())
                 {
                     if (item.Extended()?.GetComponent<BackPack.BackPackData>() is { } backPackData)
