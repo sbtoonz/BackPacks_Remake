@@ -127,6 +127,42 @@ namespace BackPacks
             }
         }
 
+        [HarmonyPatch(typeof(VisEquipment), nameof(VisEquipment.SetShoulderItem))]
+        private static class VisEquipBagPatch
+        {
+            private static void Prefix(VisEquipment __instance, string name, int variant)
+            {
+                if (Player.m_localPlayer == null) return;
+                if (name.Contains("ackpack"))
+                {
+                    if(BackPack.instance!=null)
+                    {
+                        if(Player.m_localPlayer == null) return;
+                        BackPack.instance.CloseBag();
+                        BackPack.instance.OnDisable();
+                        return;
+                    }
+                }
+                return;
+            }
+
+            private static void Postfix(VisEquipment __instance, string name, int variant)
+            {
+                if (Player.m_localPlayer == null) return;
+                if (name.Contains("ackpack"))
+                {
+                    if(BackPack.instance!=null)
+                    {
+                        if(Player.m_localPlayer == null) return;
+                        BackPack.instance.Awake();
+                        BackPack.instance.OnEnable();
+                        BackPack.instance.LoadBagContents();
+                        return;
+                    }
+                }
+                return;
+            }
+        }
 
         [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
         [HarmonyAfter(new string[]{"GoldenJude_JudesEquipment"})]

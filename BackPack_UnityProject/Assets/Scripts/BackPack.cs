@@ -39,11 +39,11 @@ public class BackPack : Container
     
 
 #endif
-    
 
-    private new void Awake()
+    public void CloseBag() => InventoryGui.instance.CloseContainer();
+
+    internal new void Awake()
     {
-        m_instance = this;
         #if UNITY_COMPILEFLAG
         if (Player.m_localPlayer == null)
         {
@@ -76,12 +76,15 @@ public class BackPack : Container
 #endif
     }
 
-    private void OnEnable()
+    internal void OnEnable()
     {
-        if(Player.m_localPlayer != null)StartCoroutine(BagContentsChanged(0f));
+        m_instance = this;
+        if (Player.m_localPlayer == null) return;
+            StartCoroutine(BagContentsChanged(0f));
+        
     }
 
-    private void OnDestroy()
+    internal void OnDestroy()
     {
         if (m_instance == this)
         {
@@ -89,7 +92,7 @@ public class BackPack : Container
         }
     }
 
-    private void OnDisable()
+    internal void OnDisable()
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
@@ -98,7 +101,7 @@ public class BackPack : Container
         m_nview.Unregister("RequestTakeAll");
         m_nview.Unregister("TakeAllRespons");
         StopCoroutine(BagContentsChanged(0f));
-        text!.gameObject.SetActive(false);
+        if(text) text!.gameObject.SetActive(false);
         #endif
     }
 
@@ -118,29 +121,26 @@ public class BackPack : Container
                 // ignored
             }
         }
+        if (!InventoryGui.instance.isActiveAndEnabled) return;
         text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
             .GetComponent<Text>();
-        if (StaticActive)
+        if (Player.m_localPlayer.m_shoulderItem == null)
         {
-            
-            if (Player.m_localPlayer.m_shoulderItem == null)
-            {
-                text.gameObject.SetActive(false);
-                return;
-            }
+            text.gameObject.SetActive(false);
+            return;
+        }
                      
-            var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
-            if (flag)
-            {
-                text.gameObject.SetActive(true);
-                text.fontSize = 16;
-                text.horizontalOverflow = HorizontalWrapMode.Wrap;
-                text.verticalOverflow = VerticalWrapMode.Overflow;
-                text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
-                    .font;
-                text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
+        var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
+        if (flag)
+        {
+            text.gameObject.SetActive(true);
+            text.fontSize = 16;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
+                .font;
+            text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
                         
-            }
         }
         StaticActive = IsActive;
 #endif
@@ -172,7 +172,7 @@ public class BackPack : Container
         }
     }
 
-    private void LoadBagContents()
+    internal void LoadBagContents()
     {
 #if UNITY_COMPILEFLAG
         if (Player.m_localPlayer.m_shoulderItem?.Extended().GetComponent<BackPackData>() is not {} backPackData)
