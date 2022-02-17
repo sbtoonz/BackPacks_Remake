@@ -32,11 +32,18 @@ public class BackPack : Container
     internal static BagTier StaticTier;
     private Text? text;
 
+
+    private static BackPack? m_instance;
+    public static BackPack? instance => m_instance;
+    
+    
+
 #endif
     
 
     private new void Awake()
     {
+        m_instance = this;
         #if UNITY_COMPILEFLAG
         if (Player.m_localPlayer == null)
         {
@@ -64,14 +71,22 @@ public class BackPack : Container
         {
             destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
         }
+        
+        StaticTier = tier;
 #endif
     }
 
     private void OnEnable()
     {
-        if(Player.m_localPlayer ==null) return;
-        StaticTier = tier;
-        StartCoroutine(BagContentsChanged(0f));
+        if(Player.m_localPlayer != null)StartCoroutine(BagContentsChanged(0f));
+    }
+
+    private void OnDestroy()
+    {
+        if (m_instance == this)
+        {
+            m_instance = null;
+        }
     }
 
     private void OnDisable()
@@ -83,6 +98,7 @@ public class BackPack : Container
         m_nview.Unregister("RequestTakeAll");
         m_nview.Unregister("TakeAllRespons");
         StopCoroutine(BagContentsChanged(0f));
+        text!.gameObject.SetActive(false);
         #endif
     }
 
@@ -102,7 +118,6 @@ public class BackPack : Container
                 // ignored
             }
         }
-        StaticActive = IsActive;
         text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
             .GetComponent<Text>();
         if (StaticActive)
@@ -127,11 +142,8 @@ public class BackPack : Container
                         
             }
         }
-        else
-        {
-            text.gameObject.SetActive(false);
-        }
-        #endif
+        StaticActive = IsActive;
+#endif
     }
 
     private void OnBackPackChange()
@@ -202,7 +214,6 @@ public class BackPack : Container
         m_lastRevision = m_nview.GetZDO().m_dataRevision;
         m_lastDataString = backPackData.packData = zPackage.GetBase64();
         backPackData.inventory = m_inventory;
-        
         Player.m_localPlayer.m_shoulderItem.Extended().Save();
 #endif
     }
@@ -214,23 +225,7 @@ public class BackPack : Container
         public Inventory? inventory;
         public BagTier Tier;
         public BackPackData(ExtendedItemData parent) : base(typeof(BackPackData).AssemblyQualifiedName, parent) { }
-
-        public void SetInventory(Inventory Inv)
-        {
-            inventory = Inv;
-            Save();
-        }
-        public Inventory GetInventory()
-        {
-            return inventory!;
-        }
-        public override string Serialize()
-        {
-            ZPackage zPackage = new ZPackage();
-            inventory?.Save(zPackage);
-            string inv64 = zPackage.GetBase64();
-            return inv64;
-        }
+        public override string Serialize() => packData;
 
         public override void Deserialize(string data)
         {
@@ -241,7 +236,6 @@ public class BackPack : Container
                 var pkg = new ZPackage(data);
                 inventory.Load(pkg);
             }
-            Save();
         }
         
         public override BaseExtendedItemComponent? Clone()

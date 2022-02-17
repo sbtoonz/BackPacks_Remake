@@ -75,45 +75,33 @@ namespace BackPacks
         private static class GetWeightPatch
         {
             private static void Postfix(ItemDrop.ItemData __instance, ref float __result)
-            {
-                if (__instance.Extended()?.GetComponent<BackPack.BackPackData>() is not { } backPackData)
-                {
-                    return;
-                }
-
+            { 
                 if (BackPacks.AlterCarryWeight!.Value)
                 {
-                    switch (backPackData.Tier)
+                  
+                    if (__instance.Extended()?.GetComponent<BackPack.BackPackData>() is { } backPackData)
                     {
-                        case BackPack.BagTier.Iron:
-                            __result += backPackData.inventory!.GetAllItems().Sum(backPackItem =>
-                                backPackItem.GetWeight() * BackPacks.CarryModifierIron!.Value);
-                            break;
-                        case BackPack.BagTier.Leather:
-                            __result += backPackData.inventory!.GetAllItems().Sum(backPackItem =>
-                                backPackItem.GetWeight() * BackPacks.CarryModifierLeather!.Value);
-                            break;
-                        case BackPack.BagTier.Silver:
-                            __result += backPackData.inventory!.GetAllItems().Sum(backPackItem =>
-                                backPackItem.GetWeight() * BackPacks.CarryModifierSilver!.Value);
-                            break;
-                        case BackPack.BagTier.BlackMetal:
-                            __result += backPackData.inventory!.GetAllItems().Sum(backPackItem =>
-                                backPackItem.GetWeight());
-                            break;
-                        case BackPack.BagTier.UnKnown:
-                            __result += backPackData.inventory!.GetAllItems().Sum(backPackItem =>
-                                backPackItem.GetWeight() * BackPacks.CarryModifierUnKnown!.Value);
-                            break;
-                        default:
-                            __result += backPackData.inventory!.GetAllItems().Sum(backPackItem =>
-                                backPackItem.GetWeight());
-                            break;
-                    }
+                        if (backPackData.inventory == null) return;
+                        __result += backPackData.Tier switch
+                        {
+                            BackPack.BagTier.Iron => backPackData.inventory!.GetAllItems()
+                                .Sum(backPackItem => backPackItem.GetWeight() * BackPacks.CarryModifierIron!.Value),
+                            BackPack.BagTier.Leather => backPackData.inventory!.GetAllItems()
+                                .Sum(backPackItem => backPackItem.GetWeight() * BackPacks.CarryModifierLeather!.Value),
+                            BackPack.BagTier.Silver => backPackData.inventory!.GetAllItems()
+                                .Sum(backPackItem => backPackItem.GetWeight() * BackPacks.CarryModifierSilver!.Value),
+                            BackPack.BagTier.BlackMetal => backPackData.inventory!.GetAllItems()
+                                .Sum(backPackItem => backPackItem.GetWeight()),
+                            BackPack.BagTier.UnKnown => backPackData.inventory!.GetAllItems()
+                                .Sum(backPackItem => backPackItem.GetWeight() * BackPacks.CarryModifierUnKnown!.Value),
+                            _ => backPackData.inventory!.GetAllItems().Sum(backPackItem => backPackItem.GetWeight())
+                        };
+                    }  
                 }
-                else
+
+                if (__instance.Extended()?.GetComponent<BackPack.BackPackData>() is not { } backPackData1) return;
                 {
-                    __result += backPackData.inventory!.GetAllItems().Sum(backPackItem => 
+                    if(backPackData1.inventory != null) __result += backPackData1.inventory!.GetAllItems().Sum(backPackItem =>
                         backPackItem.GetWeight());
                 }
             }
