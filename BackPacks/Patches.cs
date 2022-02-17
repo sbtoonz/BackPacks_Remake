@@ -11,56 +11,6 @@ namespace BackPacks
 {
     public class Patches
     {
-        /*[HarmonyPatch(typeof(Inventory), nameof(Inventory.GetTotalWeight))]
-        [HarmonyPriority(Priority.Last)]
-        private static class GetTotalWeightPatch
-        {
-            private static void Postfix(Inventory __instance, ref float __result)
-            {
-                
-                if (!Player.m_localPlayer) return;
-                if (__instance.m_name == BackPack.StaticInventory?.m_name)
-                {
-                    List<ItemDrop.ItemData> items = __instance.GetAllItems();
-                    var player = Player.m_localPlayer;
-                    foreach (var item in items.Where(item => item.m_shared.m_name.Contains("ackpack")))
-                    {
-                        EjectBackpack(item, player, __instance);
-                        break;
-                    }
-                }
-
-                if (__instance.GetAllItems().Exists(i => i.m_shared.m_name.Contains("ackpack")) && __instance.m_name == Player.m_localPlayer.m_inventory.m_name)
-                {
-                    var text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
-                        .GetComponent<Text>();
-                    if (Player.m_localPlayer.m_shoulderItem == null)
-                    {
-                        text.gameObject.SetActive(false);
-                        return;
-                    }
-                     
-                    var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
-                    if (flag)
-                    {
-                        text.gameObject.SetActive(true);
-                        text.fontSize = 16;
-                        text.horizontalOverflow = HorizontalWrapMode.Wrap;
-                        text.verticalOverflow = VerticalWrapMode.Overflow;
-                        text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
-                            .font;
-                        text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
-                        
-                    }
-                    else
-                    {
-                        text.gameObject.SetActive(false);
-                    }
-                }
-                
-            }
-        }*/
-
         [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetWeight))]
         [HarmonyPriority(Priority.Last)]
         private static class GetWeightPatch
