@@ -8,7 +8,7 @@ namespace BackPacks
         internal SeCarryWeight()
         {
             name = "SECarryWeight";
-            m_name = name;
+            m_name = "";
         }
 
         public override void UpdateStatusEffect(float dt)
@@ -20,6 +20,7 @@ namespace BackPacks
                 if (Player.m_localPlayer.m_shoulderItem != null)
                 {
                     m_icon = Player.m_localPlayer.m_shoulderItem.GetIcon();
+                    var bag = Player.m_localPlayer.gameObject.transform.Find("Visual");
                     switch (BackPack.StaticTier)
                     {
                         case BackPack.BagTier.Iron:
