@@ -17,7 +17,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.0.8";
+        internal const string ModVersion = "0.0.9";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -31,7 +31,7 @@ namespace BackPacks
         internal static Item? LeatherBag;
         internal static bool useJudesBags;
         
-        ServerSync.ConfigSync configSync = new ServerSync.ConfigSync(ModGUID) 
+        ConfigSync configSync = new(ModGUID) 
             { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         
         private static ConfigEntry<bool> serverConfigLocked = null!;
@@ -201,7 +201,7 @@ namespace BackPacks
             LeatherBag.RequiredUpgradeItems.Add("LeatherScraps", 20);
             LeatherBag.RequiredUpgradeItems.Add("DeerHide", 5);
             var ID = LeatherBag.Prefab.gameObject.GetComponent<ItemDrop>();
-            if (HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = MoveModifierSilver!.Value;
+            if (HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = MoveModifierLeather!.Value;
         }
         
         public void OnDestroy()
