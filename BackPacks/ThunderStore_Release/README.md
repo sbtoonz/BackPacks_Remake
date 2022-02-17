@@ -54,3 +54,12 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 
 ### V0.0.9
 * Fixed Leather move speed config not working
+
+### V0.1.0
+* Fixed dissappearing bag inventory
+* Fixed reported logspam in 0.0.9 via github issue
+* Fixed SE_Stat showing odd name in corner of screen (should show nothing)
+
+### V0.1.1
+* Added weight modifier to the description of the bag
+* Fixed SE icon showing when bag equipped 

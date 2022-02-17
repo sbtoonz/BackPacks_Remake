@@ -68,7 +68,7 @@
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="ExtendedItemDataFramework, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(GamePath)\BepInEx\plugins\ExtendedItemDataFramework.dll</HintPath>
+      <HintPath>Libs\ExtendedItemDataFramework.dll</HintPath>
     </Reference>
     <Reference Include="ItemManager, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>Libs\ItemManager.dll</HintPath>

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 #endif
 using UnityEngine;
 
-
+    
 public class BackPack : Container
 {
     [Serializable]
@@ -209,25 +209,45 @@ public class BackPack : Container
 #if UNITY_COMPILEFLAG
     public class BackPackData : BaseExtendedItemComponent
     {
+        public const string dataID = "BackPack";
         public string packData = "";
         public Inventory? inventory;
         public BagTier Tier;
         public BackPackData(ExtendedItemData parent) : base(typeof(BackPackData).AssemblyQualifiedName, parent) { }
 
-        public override string Serialize() => packData;
+        public void SetInventory(Inventory Inv)
+        {
+            inventory = Inv;
+            Save();
+        }
+        public Inventory GetInventory()
+        {
+            return inventory!;
+        }
+        public override string Serialize()
+        {
+            ZPackage zPackage = new ZPackage();
+            inventory?.Save(zPackage);
+            string inv64 = zPackage.GetBase64();
+            return inv64;
+        }
+
         public override void Deserialize(string data)
         {
             packData = data;
-
-            inventory = new Inventory("", null, 100, 100);
+            inventory ??= new Inventory("", null, 100, 100);
             if (data != "")
             {
                 var pkg = new ZPackage(data);
                 inventory.Load(pkg);
             }
+            Save();
         }
-
-        public override BaseExtendedItemComponent Clone() => (BaseExtendedItemComponent)MemberwiseClone();
+        
+        public override BaseExtendedItemComponent? Clone()
+        {
+            return MemberwiseClone() as BaseExtendedItemComponent;
+        }
     }
 #endif
 }
