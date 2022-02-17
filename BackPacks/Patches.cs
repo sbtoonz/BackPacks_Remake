@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace BackPacks
 {
@@ -71,15 +67,6 @@ namespace BackPacks
                 }
 
                 return true;
-            }
-
-            [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.SetupUpgradeItem))]
-            public static class UpgradeEIDF
-            {
-                public static void Postfix(Recipe recipe, ItemDrop.ItemData item, InventoryGui __instance)
-                {
-
-                }
             }
         }
 
