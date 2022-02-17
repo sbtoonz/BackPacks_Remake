@@ -11,7 +11,7 @@ namespace BackPacks
 {
     public class Patches
     {
-        [HarmonyPatch(typeof(Inventory), nameof(Inventory.GetTotalWeight))]
+        /*[HarmonyPatch(typeof(Inventory), nameof(Inventory.GetTotalWeight))]
         [HarmonyPriority(Priority.Last)]
         private static class GetTotalWeightPatch
         {
@@ -59,7 +59,7 @@ namespace BackPacks
                 }
                 
             }
-        }
+        }*/
 
         [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetWeight))]
         [HarmonyPriority(Priority.Last)]
@@ -137,7 +137,7 @@ namespace BackPacks
             {
                 if (__instance.m_StatusEffects.Count <= 0) return;
                 __instance.m_StatusEffects.Add(BackPacks.CarryStat);
-                var SE = __instance.GetStatusEffect(BackPacks.CarryStat?.m_name);
+                var SE = __instance.GetStatusEffect(BackPacks.CarryStat?.name);
                 if (BackPacks.useJudesBags)
                 {
                     if (__instance.m_items.Count <= 0 || !__instance.GetItemPrefab("Wood")) return;
@@ -196,7 +196,7 @@ namespace BackPacks
             {
                 if (__instance.m_StatusEffects.Count <= 0) return;
                 __instance.m_StatusEffects.Add(BackPacks.CarryStat);
-                var SE = __instance.GetStatusEffect(BackPacks.CarryStat?.m_name);
+                var SE = __instance.GetStatusEffect(BackPacks.CarryStat?.name);
                 if (BackPacks.useJudesBags)
                 { 
                     if (__instance.m_items.Count <= 0 || !__instance.GetItemPrefab("Wood")) return;
@@ -246,10 +246,9 @@ namespace BackPacks
                 SilverBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
             }
         }
-        
 
 
-        private static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
+        internal static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {
             var playerInventory = player.GetInventory();
             if (playerInventory.HaveEmptySlot())

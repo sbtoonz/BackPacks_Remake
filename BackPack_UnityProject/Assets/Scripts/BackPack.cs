@@ -1,8 +1,11 @@
 ﻿#define UNITY_COMPILEFLAG
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 #if UNITY_COMPILEFLAG
 using ExtendedItemDataFramework;
+using UnityEngine.UI;
 #endif
 using UnityEngine;
 
@@ -27,7 +30,7 @@ public class BackPack : Container
 
     internal static bool StaticActive;
     internal static BagTier StaticTier;
-    internal static Inventory? StaticInventory;
+    private Text? text;
 
 #endif
     
@@ -40,7 +43,7 @@ public class BackPack : Container
             return;
         }
         if (Player.m_localPlayer != null) m_nview = Player.m_localPlayer.m_nview;
-        m_inventory = new Inventory(m_name, m_bkg, m_width += Player.m_localPlayer.m_shoulderItem.m_quality/2, m_height+= Player.m_localPlayer.m_shoulderItem.m_quality/2);
+        m_inventory = new Inventory(m_name, m_bkg, m_width += Player.m_localPlayer!.m_shoulderItem.m_quality/2, m_height+= Player.m_localPlayer.m_shoulderItem.m_quality/2);
         Inventory inventory = m_inventory;
         inventory.m_onChanged = (Action)Delegate.Combine(inventory.m_onChanged, new Action(OnBackPackChange));
         m_piece = GetComponent<Piece>();
@@ -61,14 +64,13 @@ public class BackPack : Container
         {
             destructible.m_onDestroyed = (Action)Delegate.Combine(destructible.m_onDestroyed, new Action(OnDestroyed));
         }
-       
 #endif
     }
 
     private void OnEnable()
     {
         if(Player.m_localPlayer ==null) return;
-        
+        StaticTier = tier;
         StartCoroutine(BagContentsChanged(0f));
     }
 
@@ -101,8 +103,34 @@ public class BackPack : Container
             }
         }
         StaticActive = IsActive;
-        StaticInventory = m_inventory;
-        StaticTier = tier;
+        text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
+            .GetComponent<Text>();
+        if (StaticActive)
+        {
+            
+            if (Player.m_localPlayer.m_shoulderItem == null)
+            {
+                text.gameObject.SetActive(false);
+                return;
+            }
+                     
+            var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
+            if (flag)
+            {
+                text.gameObject.SetActive(true);
+                text.fontSize = 16;
+                text.horizontalOverflow = HorizontalWrapMode.Wrap;
+                text.verticalOverflow = VerticalWrapMode.Overflow;
+                text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
+                    .font;
+                text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
+                        
+            }
+        }
+        else
+        {
+            text.gameObject.SetActive(false);
+        }
         #endif
     }
 
@@ -111,7 +139,13 @@ public class BackPack : Container
 #if UNITY_COMPILEFLAG
         if (!m_loading && IsOwner())
         {
-            
+            List<ItemDrop.ItemData> items = m_inventory.GetAllItems();
+            var player = Player.m_localPlayer;
+            foreach (var item in items.Where(item => item.m_shared.m_name.Contains("ackpack")))
+            {
+                BackPacks.Patches.EjectBackpack(item, player, m_inventory);
+                break;
+            }
             SavePack();
         }
 #endif
