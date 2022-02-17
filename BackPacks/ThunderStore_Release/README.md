@@ -27,7 +27,6 @@ To bring up the bag's inventory you must
 
 ### ToDo:
 * Add configuration for each bag size
-* Add configuration to allow the items in bag to weigh less
 * Add configuration for the toggle
 
 
@@ -39,6 +38,19 @@ To bring up the bag's inventory you must
 
 # KNOWN CONFLICTS!
 1) Jotunn BackPacks
-2) ???
+2) Reported Conflict with OdinQOL when using increase inventory size
 
 If you get any conflicts/Issues please find me in the Odin+ Discord
+
+
+### V0.0.8
+* Added Config options for carry capacity bonus [Server Synced]
+* Added config options for movement speed modifier [Server Synced]
+* Added config for carry weight buff [Server Synced]
+* Added UI Tooltip for how to open bag inventory when it is equipped
+* Added code to increase bag slot count based on bag level the more levels the more slots
+* Fixed recipes for bags not matching tiers
+
+
+### V0.0.9
+* Fixed Leather move speed config not working
