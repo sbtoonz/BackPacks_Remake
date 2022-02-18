@@ -18,7 +18,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.1.1";
+        internal const string ModVersion = "0.1.2";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -62,8 +62,24 @@ namespace BackPacks
             SetupIronBag();
             SetupSilverBag();
             SetupLeatherBag();
+            ExtendedItemData.NewExtendedItemData += testfunc;
             ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.dataID, typeof(BackPack.BackPackData));
             
+        }
+
+        private void testfunc(ExtendedItemData itemdata)
+        {
+            var itemName = itemdata.m_shared.m_name;
+            if (!itemName.IsNullOrWhiteSpace())
+            {
+                if (itemName.Contains("ackpack"))
+                {
+                    Inventory tempInv = new Inventory("", null, 100, 100);
+                    var data = itemdata.AddComponent<BackPack.BackPackData>();
+                    data.SetInventory(tempInv);
+                    data.Tier = BackPack.BagTier.UnKnown;
+                }
+            }
         }
 
         private void Start()
