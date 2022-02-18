@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 4639921804854212350}
   - component: {fileID: 7071889394534452602}
   m_Layer: 12
-  m_Name: CapeSilverBackpack
+  m_Name: CapeSilverBackpackZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3076,10 +3076,8 @@ MonoBehaviour:
   m_destroyedLootPrefab: {fileID: 0}
   m_nview: {fileID: 0}
   tier: 2
-  ItemDataref: {fileID: 7071889394534452602}
-  originalDrop: {fileID: 1856056392083161}
-  MUID: 
-  mGuid: f761f747-cc18-46d0-8cb9-cc2a86e7c9f8
+  fixedWidth: 6
+  fixedHeight: 3
 --- !u!1 &115381405970783194
 GameObject:
   m_ObjectHideFlags: 0

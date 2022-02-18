@@ -4731,6 +4731,8 @@ MonoBehaviour:
   m_destroyedLootPrefab: {fileID: 0}
   m_nview: {fileID: 0}
   tier: 1
+  fixedWidth: 3
+  fixedHeight: 2
 --- !u!1 &8412096718315318855
 GameObject:
   m_ObjectHideFlags: 0
