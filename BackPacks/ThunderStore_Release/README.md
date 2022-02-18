@@ -63,3 +63,9 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 ### V0.1.1
 * Added weight modifier to the description of the bag
 * Fixed SE icon showing when bag equipped 
+
+### V0.1.2
+* Fixed edge case item dupe bug
+* Fixed game crash when unequip bag while viewing its inventory
+* Fixed inventory loss on bag upgrade (bags now retain stuff when you level them up)
+* Added modifier info the description of bag <img src="https://user-images.githubusercontent.com/67915879/154521277-a89f2893-fadd-42ec-858b-ceacf7ef0417.png">
