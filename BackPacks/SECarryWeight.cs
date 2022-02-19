@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace BackPacks
+﻿namespace BackPacks
 {
     public class SeCarryWeight : SE_Stats
     {

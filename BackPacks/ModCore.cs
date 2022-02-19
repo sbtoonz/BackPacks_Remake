@@ -23,14 +23,14 @@ namespace BackPacks
         private static Harmony harmony = null!;
         
 #pragma warning disable CS0649
-        internal static AssetBundle? eviesBackPacks;
-        internal static AssetBundle? backpackDrops;
+        internal static AssetBundle? EviesBackPacks;
+        internal static AssetBundle? BackpackDrops;
 #pragma warning restore CS0649
 
         internal static Item? IronBag;
         internal static Item? SilverBag;
         internal static Item? LeatherBag;
-        internal static bool useJudesBags;
+        internal static bool UseJudesBags;
         
         ConfigSync configSync = new(ModGUID) 
             { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
@@ -47,9 +47,9 @@ namespace BackPacks
         internal static ConfigEntry<float>? CarryBonusSilver;
         internal static ConfigEntry<float>? CarryBonusUnKnown;
         internal static ConfigEntry<bool>? HaveMoveModifier;
-        internal static ConfigEntry<float>? MoveModifierLeather;
-        internal static ConfigEntry<float>? MoveModifierIron;
-        internal static ConfigEntry<float>? MoveModifierSilver;
+        private static ConfigEntry<float>? _moveModifierLeather;
+        private static ConfigEntry<float>? _moveModifierIron;
+        private static ConfigEntry<float>? _moveModifierSilver;
         internal static ConfigEntry<float>? MoveModifierUnKnown;
         internal static SE_Stats? CarryStat;
         public void Awake()
@@ -62,12 +62,28 @@ namespace BackPacks
             SetupIronBag();
             SetupSilverBag();
             SetupLeatherBag();
-            ExtendedItemData.NewExtendedItemData += testfunc;
-            ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.dataID, typeof(BackPack.BackPackData));
+            ExtendedItemData.NewExtendedItemData += SaveEIDF;
+            ExtendedItemData.LoadExtendedItemData += LoadEIDF;
+            ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.DataID, typeof(BackPack.BackPackData));
             
         }
 
-        private void testfunc(ExtendedItemData itemdata)
+        private void LoadEIDF(ExtendedItemData itemdata)
+        {
+            if (itemdata.IsBackpack())
+            {
+                if (Player.m_localPlayer == null) return;
+                itemdata = itemdata.ExtendedClone();
+                var inv = itemdata.GetBagInv();
+                itemdata.m_shared.m_teleportable = inv!.IsTeleportable();
+                itemdata.m_shared.m_weight = 4f;
+                var temp = inv!.m_totalWeight;
+                itemdata.m_shared.m_weight += temp;
+                Player.m_localPlayer.m_inventory.UpdateTotalWeight();
+            }
+        }
+
+        private void SaveEIDF(ExtendedItemData itemdata)
         {
             var itemName = itemdata.m_shared.m_name;
             if (!itemName.IsNullOrWhiteSpace())
@@ -78,6 +94,7 @@ namespace BackPacks
                     var data = itemdata.AddComponent<BackPack.BackPackData>();
                     data.SetInventory(tempInv);
                     data.Tier = BackPack.BagTier.UnKnown;
+                    if(Player.m_localPlayer!=null) Player.m_localPlayer.m_inventory.Changed();
                 }
             }
         }
@@ -86,10 +103,10 @@ namespace BackPacks
         {
             try
             {
-                var JudeEquip = Chainloader.PluginInfos.First(p => p.Key == "GoldenJude_JudesEquipment");
-                if (JudeEquip.Value.Instance != null)
+                var judeEquip = Chainloader.PluginInfos.First(p => p.Key == "GoldenJude_JudesEquipment");
+                if (judeEquip.Value.Instance != null)
                 {
-                    useJudesBags = true;
+                    UseJudesBags = true;
                 }
             }
             catch (Exception)
@@ -144,13 +161,13 @@ namespace BackPacks
 
             HaveMoveModifier = config("General", "Should bags impact movement", false,
                 "Set this to true if you wish for bags to impact your movement");
-            MoveModifierIron = config("Move Modifiers", "Iron Tier Modifeir", 0.00f,
+            _moveModifierIron = config("Move Modifiers", "Iron Tier Modifeir", 0.00f,
                 "Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed");
 
-            MoveModifierLeather = config("Move Modifiers", "Leather Tier Modifeir", 0.00f,
+            _moveModifierLeather = config("Move Modifiers", "Leather Tier Modifeir", 0.00f,
                 "Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed");
 
-            MoveModifierSilver = config("Move Modifiers", "Silver Tier Modifeir", 0.00f,
+            _moveModifierSilver = config("Move Modifiers", "Silver Tier Modifeir", 0.00f,
                 "Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed");
 
             MoveModifierUnKnown = config("Move Modifiers", "UnKnown Tier Modifeir", 0.00f,
@@ -179,8 +196,8 @@ namespace BackPacks
             //Upgrades
             IronBag.RequiredUpgradeItems.Add("Bronze", 20);
             IronBag.RequiredUpgradeItems.Add("LeatherScraps", 5);
-            var ID = IronBag.Prefab.gameObject.GetComponent<ItemDrop>();
-            if (HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = MoveModifierIron!.Value;
+            var id = IronBag.Prefab.gameObject.GetComponent<ItemDrop>();
+            if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierIron!.Value;
 
             
         }
@@ -202,8 +219,8 @@ namespace BackPacks
             //Upgrades
             SilverBag.RequiredUpgradeItems.Add("Silver", 20);
             SilverBag.RequiredUpgradeItems.Add("WolfPelt", 5);
-            var ID = SilverBag.Prefab.gameObject.GetComponent<ItemDrop>();
-            if (HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = MoveModifierSilver!.Value;
+            var id = SilverBag.Prefab.gameObject.GetComponent<ItemDrop>();
+            if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierSilver!.Value;
         }
 
 
@@ -223,8 +240,8 @@ namespace BackPacks
             //Upgrades
             LeatherBag.RequiredUpgradeItems.Add("LeatherScraps", 20);
             LeatherBag.RequiredUpgradeItems.Add("DeerHide", 5);
-            var ID = LeatherBag.Prefab.gameObject.GetComponent<ItemDrop>();
-            if (HaveMoveModifier!.Value) ID.m_itemData.m_shared.m_movementModifier = MoveModifierLeather!.Value;
+            var id = LeatherBag.Prefab.gameObject.GetComponent<ItemDrop>();
+            if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierLeather!.Value;
         }
         
         public void OnDestroy()
