@@ -43,8 +43,10 @@ public class BackPack : Container
     #region HelperMethods
 
      internal void SetupInventory()
-    {
-        var item = Player.m_localPlayer?.m_shoulderItem!;
+     {
+         if (Player.m_localPlayer.IsDead()) return;
+         if(Player.m_localPlayer.m_shoulderItem == null) return;
+         var item = Player.m_localPlayer.m_shoulderItem;
         m_inventory = new Inventory(m_name, m_bkg, fixedWidth+item.m_quality/2, fixedHeight+item.m_quality/2);
         m_width = fixedWidth+item.m_quality/2;
         m_height = fixedHeight+item.m_quality/2;
@@ -54,6 +56,7 @@ public class BackPack : Container
 
     internal void AssignInventory(Inventory inv)
     {
+        
         m_inventory = inv;
         Inventory inventory = m_inventory;
         inventory.m_onChanged = (Action)Delegate.Combine(inventory.m_onChanged, new Action(OnBackPackChange)); 
@@ -208,6 +211,8 @@ public class BackPack : Container
         {
             yield return new WaitForSeconds(time);
             if (!m_nview.IsValid()) break;
+            if (Player.m_localPlayer.IsDead()) break;
+            if(Player.m_localPlayer.m_shoulderItem == null) break;
             Result = 0f;
             Result += tier switch
             {
@@ -234,6 +239,8 @@ public class BackPack : Container
         {
             yield return new WaitForSeconds(time);
             if(!m_nview.IsValid()) break;
+            if (Player.m_localPlayer.IsDead()) break;
+            if(Player.m_localPlayer.m_shoulderItem == null) break;
             if (Player.m_localPlayer.m_shoulderItem.IsBackpack())
             {
                 var inv = Player.m_localPlayer.m_shoulderItem.GetBagInv();
