@@ -86,7 +86,12 @@ namespace BackPacks
                         {
                             if(BackPack.instance != null)
                             {
-                                __instance.m_shoulderItem = item.Extended().ExtendedClone();
+                                if (__instance.IsPlayer() && !__instance.IsDead() && __instance.IsSwiming() && !__instance.IsOnGround())
+                                {
+                                    return;
+                                }
+                                if (Player.m_localPlayer.m_shoulderItem == null) return;
+                                if (__instance.m_shoulderItem.m_shared.m_name != item.m_shared.m_name) return;
                                 if (BackPack.instance.m_inventory != item.GetBagInv())
                                 {
                                     BackPack.instance.CloseBag();
