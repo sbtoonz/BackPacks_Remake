@@ -69,3 +69,10 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 * Fixed game crash when unequip bag while viewing its inventory
 * Fixed inventory loss on bag upgrade (bags now retain stuff when you level them up)
 * Added modifier info the description of bag <img src="https://user-images.githubusercontent.com/67915879/154521277-a89f2893-fadd-42ec-858b-ceacf7ef0417.png">
+
+### V0.1.3
+* Fixed incompatibility with EAQS by RandyKnapp
+* Fixed initial bag load issue when equipping bag of same type but different level yielding incorrect size
+* Altered Teleportation check logic, Now when any bag holds something that is not teleportable. The bag itself becomes unteleportable.
+* Altered CarryWeight modifier logic to actually apply 
+* Fixed dynamic bag slot growth based on bag quality level applying

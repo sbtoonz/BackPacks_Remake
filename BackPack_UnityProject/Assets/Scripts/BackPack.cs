@@ -28,37 +28,21 @@ public class BackPack : Container
 
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
-    private float TotalWeight => m_inventory.GetTotalWeight();
-
-    internal static bool StaticActive;
     internal static BagTier StaticTier;
     private Text? text;
-
-
+    
     private static BackPack? m_instance;
     public static BackPack? instance => m_instance;
-    
+    public float Result { get; private set; }
     public void CloseBag() => InventoryGui.instance.CloseContainer();
 
 #endif
 
-    internal new void Awake()
-    {
-        m_instance = this;
-        #if UNITY_COMPILEFLAG
-        if (Player.m_localPlayer == null)
-        {
-            return;
-        }
-        if (Player.m_localPlayer != null) m_nview = Player.m_localPlayer.m_nview;
-        SetupInventory();
-        RegisterRPC();
-        Player.m_localPlayer?.m_shoulderItem.Extended()?.Save();
-        StaticTier = tier;
-#endif
-    }
 
-    internal void SetupInventory()
+
+    #region HelperMethods
+
+     internal void SetupInventory()
     {
         var item = Player.m_localPlayer?.m_shoulderItem!;
         m_inventory = new Inventory(m_name, m_bkg, fixedWidth+item.m_quality/2, fixedHeight+item.m_quality/2);
@@ -84,7 +68,6 @@ public class BackPack : Container
         m_inventory.m_height = m_height;
     }
     
-
     internal void RegisterRPC()
     {
         if ((bool)m_nview)
@@ -96,49 +79,6 @@ public class BackPack : Container
             m_nview.Register<string>("AdminInspectReq", RPC_AdminPeekContentsReq);
             m_nview.Register<string>("AdminInspectRespons", RPC_AdminPeekContentsResponse);
         }
-    }
-    
-    internal void OnEnable()
-    {
-#if UNITY_COMPILEFLAG
-        if (Player.m_localPlayer == null) return;
-        StartCoroutines();
-        if(InventoryGui.instance.m_container.gameObject.activeInHierarchy) CloseBag();
-#endif
-
-    }
-
-    internal void StartCoroutines()
-    {
-        StartCoroutine(BagContentsChanged(0f));
-        if(BackPacks.BackPacks.AlterCarryWeight!.Value)StartCoroutine(WeightOffsetRoutine(0f));
-        StartCoroutine(AddInvWeightToItemWeight(0f));  
-    }
-
-    internal void OnDestroy()
-    {
-#if UNITY_COMPILEFLAG
-        if (m_instance == this)
-        {
-            m_instance = null;
-
-        }
-#endif
-    }
-
-    internal void OnDisable()
-    {
-        #if UNITY_COMPILEFLAG
-        if(Player.m_localPlayer == null) return;
-        DeRegisterRPC();
-        StopCoroutines();
-        DisableHelpText();
-        #endif
-    }
-
-    internal void DisableHelpText()
-    {
-        if(text) text!.gameObject.SetActive(false);   
     }
     
     internal void DeRegisterRPC()
@@ -157,7 +97,66 @@ public class BackPack : Container
         StopCoroutine(AddInvWeightToItemWeight(0f));
         if(BackPacks.BackPacks.AlterCarryWeight!.Value)StopCoroutine(WeightOffsetRoutine(0f)); 
     }
+    internal void DisableHelpText()
+    {
+        if(text) text!.gameObject.SetActive(false);   
+    }
 
+    internal void StartCoroutines()
+    {
+        StartCoroutine(BagContentsChanged(0f));
+        if(BackPacks.BackPacks.AlterCarryWeight!.Value)StartCoroutine(WeightOffsetRoutine(0f));
+        StartCoroutine(AddInvWeightToItemWeight(0f));  
+    }
+
+    #endregion
+
+    #region  UnityEvents
+
+    internal new void Awake()
+    {
+        m_instance = this;
+#if UNITY_COMPILEFLAG
+        if (Player.m_localPlayer == null)
+        {
+            return;
+        }
+        if (Player.m_localPlayer != null) m_nview = Player.m_localPlayer.m_nview;
+        SetupInventory();
+        RegisterRPC();
+        Player.m_localPlayer?.m_shoulderItem.Extended()?.Save();
+        StaticTier = tier;
+#endif
+    }
+        internal void OnEnable()
+    {
+#if UNITY_COMPILEFLAG
+        if (Player.m_localPlayer == null) return;
+        StartCoroutines();
+        if(InventoryGui.instance.m_container.gameObject.activeInHierarchy) CloseBag();
+#endif
+
+    }
+
+    internal void OnDestroy()
+    {
+#if UNITY_COMPILEFLAG
+        if (m_instance == this)
+        {
+            m_instance = null;
+
+        }
+#endif
+    }
+    internal void OnDisable()
+    {
+        #if UNITY_COMPILEFLAG
+        if(Player.m_localPlayer == null) return;
+        DeRegisterRPC();
+        StopCoroutines();
+        DisableHelpText();
+#endif
+    }
     private void Update()
     {
         #if UNITY_COMPILEFLAG
@@ -195,10 +194,14 @@ public class BackPack : Container
             text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
                         
         }
-        StaticActive = IsActive;
 #endif
     }
-#if UNITY_COMPILEFLAG
+
+    #endregion
+
+    #region Enumerators
+
+    #if UNITY_COMPILEFLAG
     private IEnumerator WeightOffsetRoutine(float time)
     {
         while (true)
@@ -243,9 +246,20 @@ public class BackPack : Container
         }
     }
 #endif
-    public float Result { get; private set; }
+    private IEnumerator BagContentsChanged(float time)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(time);
+            if (!m_nview.IsValid()) break;
+            LoadBagContents();
+        }
+    }
+    #endregion
 
-    private void OnBackPackChange()
+    #region BagContentsFunctions
+
+        private void OnBackPackChange()
     {
 #if UNITY_COMPILEFLAG
         if (!m_loading && IsOwner())
@@ -267,16 +281,6 @@ public class BackPack : Container
 #endif
     }
     
-    private IEnumerator BagContentsChanged(float time)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(time);
-            if (!m_nview.IsValid()) break;
-            LoadBagContents();
-        }
-    }
-
     internal void LoadBagContents()
     {
 #if UNITY_COMPILEFLAG
@@ -308,6 +312,7 @@ public class BackPack : Container
     private void SavePack()
     {
 #if UNITY_COMPILEFLAG
+        if(Player.m_localPlayer.m_shoulderItem == null) return;
         if (Player.m_localPlayer.m_shoulderItem?.Extended().GetComponent<BackPackData>() is not {} backPackData)
         {
             if (Player.m_localPlayer.m_shoulderItem is null)
@@ -328,7 +333,11 @@ public class BackPack : Container
         Player.m_localPlayer.m_shoulderItem.Extended().Save();
 #endif
     }
-    
+
+    #endregion
+
+    #region RPCs
+
 #if UNITY_COMPILEFLAG
     private void RPC_AdminPeekContentsResponse(long uid, string inventwory64)
     {
@@ -352,6 +361,11 @@ public class BackPack : Container
         }
     }
 #endif
+
+    #endregion
+
+    #region EIDF
+
 #if UNITY_COMPILEFLAG
     public class BackPackData : BaseExtendedItemComponent
     {
@@ -388,6 +402,9 @@ public class BackPack : Container
         }
     }
 #endif
+
+    #endregion
+
 
     
 }

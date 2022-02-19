@@ -1,4 +1,5 @@
-﻿using ExtendedItemDataFramework;
+﻿using System;
+using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
 
@@ -70,191 +71,37 @@ namespace BackPacks
         }
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+        [HarmonyPriority(Priority.VeryLow)]
         public static class EquipItemPatch
         {
-            public static bool Prefix(Humanoid __instance, ItemDrop.ItemData item, bool __runOriginal,
-	            bool triggerEquipEffects = true)
+         
+            private static void Postfix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
             {
-	            if (!__runOriginal)
-	            {
-		            return false;
-	            }
-                if (__instance == Player.m_localPlayer)
+                if (__instance != Player.m_localPlayer) return;
+                if (!item.IsBackpack()) return;
+                switch (item.m_shared.m_itemType)
                 {
-	                return EquipItem(item, __instance, triggerEquipEffects);
+                    case ItemDrop.ItemData.ItemType.Shoulder:
+                        if (item.IsBackpack())
+                        {
+                            if(BackPack.instance != null)
+                            {
+                                __instance.m_shoulderItem = item.Extended().ExtendedClone();
+                                if (BackPack.instance.m_inventory != item.GetBagInv())
+                                {
+                                    BackPack.instance.CloseBag();
+                                    BackPack.instance.DeRegisterRPC();
+                                    BackPack.instance.StopCoroutines();
+                                    BackPack.instance.SetupInventory();
+                                    BackPack.instance.AssignInventory(item.GetBagInv()!);
+                                    BackPack.instance.AssignContainerSize(item.Extended().m_quality);
+                                    BackPack.instance.StartCoroutines();
+                                    BackPack.instance.RegisterRPC();
+                                }
+                            }
+                        }
+                        break;
                 }
-
-                return EquipItem(item, __instance, triggerEquipEffects);
-            }
-
-            private static bool EquipItem(ItemDrop.ItemData item, Humanoid humanoid, bool triggerEquipEffects = true)
-            {
-                if (humanoid.IsItemEquiped(item.Extended()))
-                {
-	                return false;
-                }
-                if (!humanoid.m_inventory.ContainsItem(item))
-                {
-	                return false;
-                }
-                if (humanoid.InAttack() || humanoid.InDodge())
-                {
-	                return false;
-                }
-                if (humanoid.IsPlayer() && !humanoid.IsDead() && humanoid.IsSwiming() && !humanoid.IsOnGround())
-                {
-	                return false;
-                }
-                if (item.m_shared.m_useDurability && item.m_durability <= 0f)
-                {
-	                return false;
-                }
-                if (item.m_shared.m_dlc.Length > 0 && !DLCMan.instance.IsDLCInstalled(item.m_shared.m_dlc))
-                {
-	                humanoid.Message(MessageHud.MessageType.Center, "$msg_dlcrequired");
-	                return false;
-                }
-                if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Tool)
-                {
-	                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-	                humanoid.UnequipItem(humanoid.m_leftItem, triggerEquipEffects);
-	                humanoid.m_rightItem = item.Extended().ExtendedClone();
-	                humanoid.m_hiddenRightItem = null;
-	                humanoid.m_hiddenLeftItem = null;
-	                humanoid.m_rightItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Torch)
-                {
-	                if (humanoid.m_rightItem != null && humanoid.m_leftItem == null && humanoid.m_rightItem.m_shared.m_itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
-	                {
-		                humanoid.m_leftItem = item.Extended().ExtendedClone();
-	                }
-	                else
-	                {
-		                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-		                if (humanoid.m_leftItem != null && humanoid.m_leftItem.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Shield)
-		                {
-			                humanoid.UnequipItem(humanoid.m_leftItem, triggerEquipEffects);
-		                }
-		                humanoid.m_rightItem = item.Extended().ExtendedClone();
-	                }
-	                humanoid.m_hiddenRightItem = null;
-	                humanoid.m_hiddenLeftItem = null;
-	                humanoid.m_rightItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.OneHandedWeapon)
-                {
-	                if (humanoid.m_rightItem != null && humanoid.m_rightItem.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Torch && humanoid.m_leftItem == null)
-	                {
-		                ItemDrop.ItemData rightItem = humanoid.m_rightItem.Extended().ExtendedClone();
-		                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-		                humanoid.m_leftItem = rightItem;
-		                humanoid.m_leftItem.m_equiped = true;
-		                humanoid.m_leftItem.Extended().Save();
-	                }
-	                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-	                if (humanoid.m_leftItem != null && humanoid.m_leftItem.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Shield && humanoid.m_leftItem.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Torch)
-	                {
-		                humanoid.UnequipItem(humanoid.m_leftItem, triggerEquipEffects);
-	                }
-	                humanoid.m_rightItem = item.Extended().ExtendedClone();
-	                humanoid.m_hiddenRightItem = null;
-	                humanoid.m_hiddenLeftItem = null;
-	                humanoid.m_rightItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shield)
-                {
-	                humanoid.UnequipItem(humanoid.m_leftItem, triggerEquipEffects);
-	                if (humanoid.m_rightItem != null && humanoid.m_rightItem.m_shared.m_itemType != ItemDrop.ItemData.ItemType.OneHandedWeapon && humanoid.m_rightItem.m_shared.m_itemType != ItemDrop.ItemData.ItemType.Torch)
-	                {
-		                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-	                }
-	                humanoid.m_leftItem = item.Extended().ExtendedClone();
-	                humanoid.m_hiddenRightItem = null;
-	                humanoid.m_hiddenLeftItem = null;
-	                humanoid.m_leftItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Bow)
-                {
-	                humanoid.UnequipItem(humanoid.m_leftItem, triggerEquipEffects);
-	                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-	                humanoid.m_leftItem = item.Extended().ExtendedClone();
-	                humanoid.m_hiddenRightItem = null;
-	                humanoid.m_hiddenLeftItem = null;
-	                humanoid.m_leftItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.TwoHandedWeapon)
-                {
-	                humanoid.UnequipItem(humanoid.m_leftItem, triggerEquipEffects);
-	                humanoid.UnequipItem(humanoid.m_rightItem, triggerEquipEffects);
-	                humanoid.m_rightItem = item.Extended().ExtendedClone();
-	                humanoid.m_hiddenRightItem = null;
-	                humanoid.m_hiddenLeftItem = null;
-	                humanoid.m_rightItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Chest)
-                {
-	                humanoid.UnequipItem(humanoid.m_chestItem, triggerEquipEffects);
-	                humanoid.m_chestItem = item.Extended().ExtendedClone();
-	                humanoid.m_chestItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Legs)
-                {
-	                humanoid.UnequipItem(humanoid.m_legItem, triggerEquipEffects);
-	                humanoid.m_legItem = item.Extended().ExtendedClone();
-	                humanoid.m_legItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Ammo)
-                {
-	                humanoid.UnequipItem(humanoid.m_ammoItem, triggerEquipEffects);
-	                humanoid.m_ammoItem = item.Extended().ExtendedClone();
-	                humanoid.m_ammoItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Helmet)
-                {
-	                humanoid.UnequipItem(humanoid.m_helmetItem, triggerEquipEffects);
-	                humanoid.m_helmetItem = item.Extended().ExtendedClone();
-	                humanoid.m_helmetItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Shoulder)
-                {
-	                humanoid.UnequipItem(humanoid.m_shoulderItem, triggerEquipEffects);
-	                humanoid.m_shoulderItem = item.Extended().ExtendedClone();
-	                if (item.IsBackpack())
-	                {
-		                if(BackPack.instance != null)
-		                {
-			                if (BackPack.instance.m_inventory != item.GetBagInv())
-			                {
-				                BackPack.instance.CloseBag();
-				                BackPack.instance.DeRegisterRPC();
-				                BackPack.instance.StopCoroutines();
-				                BackPack.instance.SetupInventory();
-				                BackPack.instance.AssignInventory(item.GetBagInv()!);
-				                BackPack.instance.AssignContainerSize(item.Extended().m_quality);
-				                BackPack.instance.StartCoroutines();
-				                BackPack.instance.RegisterRPC();
-			                }
-		                }
-	                }
-	                humanoid.m_shoulderItem.Extended().Save();
-                }
-                else if (item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Utility)
-                {
-	                humanoid.UnequipItem(humanoid.m_utilityItem, triggerEquipEffects);
-	                humanoid.m_utilityItem = item.Extended().ExtendedClone();
-	                humanoid.m_utilityItem.Extended().Save();
-                }
-                if (humanoid.IsItemEquiped(item))
-                {
-	                item.m_equiped = true;
-                }
-                humanoid.SetupEquipment();
-                if (triggerEquipEffects)
-                {
-	                humanoid.TriggerEquipEffect(item);
-                }
-                return true;
             }
         }
 
