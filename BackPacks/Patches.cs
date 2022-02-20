@@ -129,8 +129,8 @@ namespace BackPacks
                     {
                         var heavybackpack = HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject
                             .AddComponent<BackPack>();
-                        heavybackpack.m_width = 5;
-                        heavybackpack.m_height = 3;
+                        heavybackpack.fixedWidth = 5;
+                        heavybackpack.fixedHeight = 3;
                         heavybackpack.m_name = "Backpack";
                         
                         var ID = HeavyBag.gameObject.GetComponent<ItemDrop>();
@@ -147,8 +147,8 @@ namespace BackPacks
                             .AddComponent<BackPack>();
 
 
-                        simplebackpack.m_width = 3;
-                        simplebackpack.m_height = 2;
+                        simplebackpack.fixedWidth = 3;
+                        simplebackpack.fixedHeight = 2;
                         simplebackpack.m_name = "Backpack";
                         var ID = simpleBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
@@ -187,8 +187,8 @@ namespace BackPacks
                     if (HeavyBag)
                     {
                         var heavybackpack =HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject.AddComponent<BackPack>();
-                        heavybackpack.m_width = 5;
-                        heavybackpack.m_height = 3;
+                        heavybackpack.fixedWidth = 5;
+                        heavybackpack.fixedHeight = 3;
                         var ID = HeavyBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
                         {
@@ -204,8 +204,8 @@ namespace BackPacks
                             .AddComponent<BackPack>();
 
 
-                        simplebackpack.m_width = 3;
-                        simplebackpack.m_height = 2;
+                        simplebackpack.fixedWidth = 3;
+                        simplebackpack.fixedHeight = 2;
                         var ID = simpleBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
                         {

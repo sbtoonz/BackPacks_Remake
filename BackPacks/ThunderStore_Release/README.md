@@ -76,3 +76,9 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 * Altered Teleportation check logic, Now when any bag holds something that is not teleportable. The bag itself becomes unteleportable.
 * Altered CarryWeight modifier logic to actually apply 
 * Fixed dynamic bag slot growth based on bag quality level applying
+
+### V0.1.4
+* Fixed reported conflict with Dual Wield
+
+### V0.1.5
+* Fixed issue where Jude's bags had no inventory displayed
