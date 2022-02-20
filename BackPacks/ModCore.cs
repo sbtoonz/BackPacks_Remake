@@ -187,6 +187,10 @@ namespace BackPacks
             IronBag.Description.English("A Rugged backpack, complete with buckles and fine leather straps, The more you level this bag up the more your storage will increase!"
                                         +$" \n \n Weight reduction: <color=orange> {String.Format("{0:P2}.", CarryModifierIron!.Value)} </color>"
                                         +$"\n Max carry increase: <color=orange> {CarryBonusIron!.Value}</color>");
+            IronBag.Name.German("Rauer Rucksack");
+            IronBag.Description.German("Ein rauer Rucksack, inklusive Schnallen und feinen Lederriemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
+                                       +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierIron!.Value)} </color>"
+                                       +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusIron!.Value}</color>");
             //Crafting
             IronBag.Crafting.Add(CraftingTable.Workbench, 1);
             IronBag.RequiredItems.Add("Bronze", 8);
@@ -210,6 +214,10 @@ namespace BackPacks
             SilverBag.Description.English("A Fine backpack, complete with hand made straps, The more you level this bag up the more your storage will increase!"
                                           +$" \n \n Weight reduction: <color=orange> {String.Format("{0:P2}.", CarryModifierSilver!.Value)} </color>"
                                           +$"\n Max carry increase: <color=orange> {CarryBonusSilver!.Value}</color>");
+            SilverBag.Name.German("Guter Rucksack");
+            SilverBag.Description.English("Ein guter Rucksack, mit in Handarbeit hergestellten Riemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
+                                          +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierSilver!.Value)} </color>"
+                                          +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusSilver!.Value}</color>");
             //Crafting
             SilverBag.Crafting.Add(CraftingTable.Workbench, 1);
             SilverBag.RequiredItems.Add("Silver", 23);
@@ -232,6 +240,10 @@ namespace BackPacks
             LeatherBag.Description.English("An ordinary backpack, can store various items, The more you level this bag up the more your storage will increase!"
                                            +$" \n \n Weight reduction: <color=orange> {String.Format("{0:P2}.", CarryModifierLeather!.Value)} </color>"
                                            +$"\n Max carry increase: <color=orange> {CarryBonusLeather!.Value}</color>");
+            LeatherBag.Name.German("Gewöhnlicher Rucksack");
+            LeatherBag.Description.English("Ein gewöhnlicher Rucksack, in dem verschiedene Gegenstände verstaut werden können. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
+                                           +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierLeather!.Value)} </color>"
+                                           +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusLeather!.Value}</color>");
             //Crafting
             LeatherBag.Crafting.Add(CraftingTable.Workbench, 1);
             LeatherBag.RequiredItems.Add("LeatherScraps", 30);
