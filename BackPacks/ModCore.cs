@@ -215,7 +215,7 @@ namespace BackPacks
                                           +$" \n \n Weight reduction: <color=orange> {String.Format("{0:P2}.", CarryModifierSilver!.Value)} </color>"
                                           +$"\n Max carry increase: <color=orange> {CarryBonusSilver!.Value}</color>");
             SilverBag.Name.German("Guter Rucksack");
-            SilverBag.Description.English("Ein guter Rucksack, mit in Handarbeit hergestellten Riemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
+            SilverBag.Description.German("Ein guter Rucksack, mit in Handarbeit hergestellten Riemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
                                           +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierSilver!.Value)} </color>"
                                           +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusSilver!.Value}</color>");
             //Crafting
@@ -241,7 +241,7 @@ namespace BackPacks
                                            +$" \n \n Weight reduction: <color=orange> {String.Format("{0:P2}.", CarryModifierLeather!.Value)} </color>"
                                            +$"\n Max carry increase: <color=orange> {CarryBonusLeather!.Value}</color>");
             LeatherBag.Name.German("Gewöhnlicher Rucksack");
-            LeatherBag.Description.English("Ein gewöhnlicher Rucksack, in dem verschiedene Gegenstände verstaut werden können. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
+            LeatherBag.Description.German("Ein gewöhnlicher Rucksack, in dem verschiedene Gegenstände verstaut werden können. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
                                            +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierLeather!.Value)} </color>"
                                            +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusLeather!.Value}</color>");
             //Crafting
