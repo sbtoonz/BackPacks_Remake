@@ -34,8 +34,6 @@
                         case BackPack.BagTier.UnKnown:
                             m_addMaxCarryWeight = BackPacks.CarryBonusUnKnown!.Value;
                             break;
-                        default:
-                            break;
                     }
                 }
             }

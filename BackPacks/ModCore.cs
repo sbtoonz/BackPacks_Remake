@@ -18,7 +18,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.1.5";
+        internal const string ModVersion = "0.1.8";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -33,7 +33,7 @@ namespace BackPacks
         internal static bool UseJudesBags;
         
         ConfigSync configSync = new(ModGUID) 
-            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         
         private static ConfigEntry<bool> serverConfigLocked = null!;
         internal static ConfigEntry<bool>? AlterCarryWeight;
@@ -51,6 +51,13 @@ namespace BackPacks
         private static ConfigEntry<float>? _moveModifierIron;
         private static ConfigEntry<float>? _moveModifierSilver;
         internal static ConfigEntry<float>? MoveModifierUnKnown;
+        internal static ConfigEntry<Vector3>? SilverBagSize;
+        internal static ConfigEntry<Vector3>? IronBagSize;
+        internal static ConfigEntry<Vector3>? LeatherBagSize;
+        internal static ConfigEntry<Vector3>? UnknownBagSize;
+        internal static ConfigEntry<KeyCode>? OpenInventoryKey;
+
+
         internal static SE_Stats? CarryStat;
         public void Awake()
         {
@@ -93,7 +100,6 @@ namespace BackPacks
                     Inventory tempInv = new Inventory("", null, 100, 100);
                     var data = itemdata.AddComponent<BackPack.BackPackData>();
                     data.SetInventory(tempInv);
-                    data.Tier = BackPack.BagTier.UnKnown;
                     if(Player.m_localPlayer!=null) Player.m_localPlayer.m_inventory.Changed();
                 }
             }
@@ -174,7 +180,27 @@ namespace BackPacks
                 "Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed");
 
             #endregion
+
+            #region BagSizes
+
             
+            LeatherBagSize = config("Bag Sizes", "Leather Bag size", new Vector3(2, 1, 0),
+                "This is the dimensions used for the inventory layout in leather bag");
+            IronBagSize = config("Bag Sizes", "Iron Bag size", new Vector3(4, 2, 0),
+                "This is the dimensions used for the inventory layout in leather bag");
+            SilverBagSize = config("Bag Sizes", "Silver Bag size", new Vector3(6, 4, 0),
+                "This is the dimensions used for the inventory layout in leather bag");
+            UnknownBagSize = config("Bag Sizes", "Unknown Bag size", new Vector3(4, 4, 0),
+                "This is the dimensions used for the inventory layout in leather bag");
+
+            #endregion
+
+            #region keyconfig
+
+            OpenInventoryKey = config("General", "Key to open bag", KeyCode.E,
+                "Modifier key to use when opening bag contents");
+
+            #endregion
             
             configSync.AddLockingConfigEntry(serverConfigLocked);
         }

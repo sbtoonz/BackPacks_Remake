@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace BackPacks
 {
@@ -40,7 +43,17 @@ namespace BackPacks
                 {
                     upgradeItem.m_quality = newQuality;
                     upgradeItem.m_durability = upgradeItem.GetMaxDurability();
-
+                    if (upgradeItem.IsBackpack())
+                    {
+                        if (BackPack.instance != null)
+                        {
+                            BackPack.instance.CloseBag();
+                            BackPack.instance.StopCoroutines();
+                            BackPack.instance.ApplyConfigToInventory();
+                            BackPack.instance.AssignContainerSize(upgradeItem.Extended().m_quality);
+                            BackPack.instance.StartCoroutines();
+                        }
+                    }
                     if (!player.NoCostCheat())
                     {
                         player.ConsumeResources(__instance.m_craftRecipe.m_resources, newQuality);
@@ -74,38 +87,42 @@ namespace BackPacks
         [HarmonyPriority(Priority.VeryLow)]
         public static class EquipItemPatch
         {
-         
-            private static void Postfix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
+
+            private static void Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
             {
                 if (__instance != Player.m_localPlayer) return;
                 if (!item.IsBackpack()) return;
                 switch (item.m_shared.m_itemType)
                 {
                     case ItemDrop.ItemData.ItemType.Shoulder:
-                        if (item.IsBackpack())
-                        {
+                       
                             if(BackPack.instance != null)
                             {
-                                if (__instance.IsPlayer() && !__instance.IsDead() && __instance.IsSwiming() && !__instance.IsOnGround())
+                                if (__instance.IsPlayer() && __instance.IsDead())
+                                {
+                                    return;
+                                }
+
+                                if (__instance.IsTeleporting())
                                 {
                                     return;
                                 }
                                 if (Player.m_localPlayer.m_shoulderItem == null) return;
-                                if (__instance.m_shoulderItem.m_shared.m_name != item.m_shared.m_name) return;
+                                if (__instance.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
                                 if (BackPack.instance.m_inventory != item.GetBagInv())
                                 {
                                     BackPack.instance.CloseBag();
                                     BackPack.instance.DeRegisterRPC();
                                     BackPack.instance.StopCoroutines();
-                                    BackPack.instance.SetupInventory();
+                                    BackPack.instance.ApplyConfigToInventory();
                                     BackPack.instance.AssignInventory(item.GetBagInv()!);
+                                    BackPack.instance.LoadBagContents();
                                     BackPack.instance.AssignContainerSize(item.Extended().m_quality);
                                     BackPack.instance.StartCoroutines();
                                     BackPack.instance.RegisterRPC();
                                 }
                             }
-                        }
-                        break;
+                            break;
                 }
             }
         }
@@ -131,7 +148,9 @@ namespace BackPacks
                             .AddComponent<BackPack>();
                         heavybackpack.fixedWidth = 5;
                         heavybackpack.fixedHeight = 3;
+                        heavybackpack.ApplyConfigToInventory();
                         heavybackpack.m_name = "Backpack";
+                        heavybackpack.tier = BackPack.BagTier.Silver;
                         
                         var ID = HeavyBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
@@ -149,7 +168,9 @@ namespace BackPacks
 
                         simplebackpack.fixedWidth = 3;
                         simplebackpack.fixedHeight = 2;
+                        simplebackpack.ApplyConfigToInventory();
                         simplebackpack.m_name = "Backpack";
+                        simplebackpack.tier = BackPack.BagTier.Iron;
                         var ID = simpleBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
                         {
@@ -189,6 +210,10 @@ namespace BackPacks
                         var heavybackpack =HeavyBag.transform.Find("attach_skin/heavyBackpack").gameObject.AddComponent<BackPack>();
                         heavybackpack.fixedWidth = 5;
                         heavybackpack.fixedHeight = 3;
+                        heavybackpack.ApplyConfigToInventory();
+                        heavybackpack.m_width = heavybackpack.fixedWidth;
+                        heavybackpack.m_height = heavybackpack.fixedHeight;
+                        heavybackpack.tier = BackPack.BagTier.Silver;
                         var ID = HeavyBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
                         {
@@ -206,6 +231,8 @@ namespace BackPacks
 
                         simplebackpack.fixedWidth = 3;
                         simplebackpack.fixedHeight = 2;
+                        simplebackpack.tier = BackPack.BagTier.Iron;
+                        simplebackpack.ApplyConfigToInventory();
                         var ID = simpleBag.gameObject.GetComponent<ItemDrop>();
                         if (BackPacks.AddCarryBonus!.Value)
                         {

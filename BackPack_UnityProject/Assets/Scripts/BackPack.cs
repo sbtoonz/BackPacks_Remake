@@ -43,17 +43,43 @@ public class BackPack : Container
     #region HelperMethods
 
      internal void SetupInventory()
-     {
+     { 
          if (Player.m_localPlayer.IsDead()) return;
          if(Player.m_localPlayer.m_shoulderItem == null) return;
          var item = Player.m_localPlayer.m_shoulderItem;
-        m_inventory = new Inventory(m_name, m_bkg, fixedWidth+item.m_quality/2, fixedHeight+item.m_quality/2);
-        m_width = fixedWidth+item.m_quality/2;
-        m_height = fixedHeight+item.m_quality/2;
-        Inventory inventory = m_inventory;
-        inventory.m_onChanged = (Action)Delegate.Combine(inventory.m_onChanged, new Action(OnBackPackChange)); 
+         m_inventory = new Inventory(m_name, m_bkg, fixedWidth+item.m_quality/2, fixedHeight+item.m_quality/2);
+         m_width = fixedWidth+item.m_quality/2;
+         m_height = fixedHeight+item.m_quality/2;
+         Inventory inventory = m_inventory;
+         inventory.m_onChanged = (Action)Delegate.Combine(inventory.m_onChanged, new Action(OnBackPackChange)); 
     }
 
+     internal void ApplyConfigToInventory()
+     {
+#if UNITY_COMPILEFLAG
+         switch (tier)
+         {
+             case BagTier.Leather:
+                 fixedHeight = Mathf.CeilToInt(BackPacks.BackPacks.LeatherBagSize!.Value.y);
+                 fixedWidth = Mathf.CeilToInt(BackPacks.BackPacks.LeatherBagSize.Value.x);
+                 break;
+             case BagTier.Iron:
+                 fixedHeight = Mathf.CeilToInt(BackPacks.BackPacks.IronBagSize!.Value.y);
+                 fixedWidth = Mathf.CeilToInt(BackPacks.BackPacks.IronBagSize.Value.x);
+                 break;
+             case BagTier.Silver:
+                 fixedHeight = Mathf.CeilToInt(BackPacks.BackPacks.SilverBagSize!.Value.y);
+                 fixedWidth = Mathf.CeilToInt(BackPacks.BackPacks.SilverBagSize.Value.x);
+                 break;
+             case BagTier.BlackMetal:
+                 break;
+             case BagTier.UnKnown:
+                 fixedHeight = Mathf.CeilToInt(BackPacks.BackPacks.UnknownBagSize!.Value.y);
+                 fixedWidth = Mathf.CeilToInt(BackPacks.BackPacks.UnknownBagSize.Value.x);
+                 break;
+         }
+#endif
+     }
     internal void AssignInventory(Inventory inv)
     {
         
@@ -125,22 +151,16 @@ public class BackPack : Container
             return;
         }
         if (Player.m_localPlayer != null) m_nview = Player.m_localPlayer.m_nview;
+        ApplyConfigToInventory();
         SetupInventory();
         RegisterRPC();
+        StartCoroutines();
+        LoadBagContents();
+        if(InventoryGui.instance.m_container.gameObject.activeInHierarchy) CloseBag();
         Player.m_localPlayer?.m_shoulderItem.Extended()?.Save();
         StaticTier = tier;
 #endif
     }
-        internal void OnEnable()
-    {
-#if UNITY_COMPILEFLAG
-        if (Player.m_localPlayer == null) return;
-        StartCoroutines();
-        if(InventoryGui.instance.m_container.gameObject.activeInHierarchy) CloseBag();
-#endif
-
-    }
-
     internal void OnDestroy()
     {
 #if UNITY_COMPILEFLAG
@@ -164,8 +184,11 @@ public class BackPack : Container
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
+        if (!Player.m_localPlayer.IsOnGround()) return;
+        if (Player.m_localPlayer.IsDead()) return;
+        
         if (!InventoryGui.IsVisible()) return;
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(BackPacks.BackPacks.OpenInventoryKey!.Value))
         {
             try
             {
@@ -181,20 +204,21 @@ public class BackPack : Container
             .GetComponent<Text>();
         if (Player.m_localPlayer.m_shoulderItem == null)
         {
-            text.gameObject.SetActive(false);
+            if(text)text.gameObject.SetActive(false);
             return;
         }
                      
         var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
         if (flag)
         {
+            if(!text) return;
             text.gameObject.SetActive(true);
             text.fontSize = 16;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
                 .font;
-            text.text = "[<color=yellow>Left Shift & E</color>] Opens BackPack Inventory";
+            text.text = $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
                         
         }
 #endif
@@ -312,6 +336,7 @@ public class BackPack : Container
             if(Player.m_localPlayer.m_shoulderItem.IsExtended()) Player.m_localPlayer.m_shoulderItem.Extended().m_shared.m_teleportable = backPackData.Inventory.IsTeleportable();
             Player.m_localPlayer.m_shoulderItem.m_shared.m_teleportable = backPackData.Inventory.IsTeleportable();
         }
+        SavePack();
 #endif
 
     }
@@ -346,21 +371,18 @@ public class BackPack : Container
     #region RPCs
 
 #if UNITY_COMPILEFLAG
-    private void RPC_AdminPeekContentsResponse(long uid, string inventwory64)
+    private void RPC_AdminPeekContentsResponse(long uid, string s)
     {
-        ZLog.Log("Admin" + uid + "Wants to inspect: " + base.gameObject.name + " im: " + ZDOMan.instance.GetMyID());
-        ZPackage zPackage = new ZPackage(m_lastDataString);
-        ZLog.Log($"Inventory64contets:{zPackage.GetBase64()}");
-        
+        ZLog.Log("Admin " + uid + " Wants to inspect: " + base.gameObject.name + " im: " + ZDOMan.instance.GetMyID());
+        InventoryGui.instance.Show(this);
+
     }
 
     private void RPC_AdminPeekContentsReq(long uid, string playerName)
     {
         if(ZNet.instance.m_adminList.Contains(playerName))
         {
-            ZPackage zPackage = new ZPackage();
-            var string64 = Player.m_localPlayer.m_shoulderItem.Extended()?.GetComponent<BackPackData>().PackData;
-            m_nview.InvokeRPC(uid, nameof(RPC_AdminPeekContentsResponse), string64);
+            m_nview.InvokeRPC(uid, "AdminInspectRespons", "");
         }
         else
         {

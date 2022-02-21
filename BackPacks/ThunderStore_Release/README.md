@@ -25,11 +25,6 @@ To bring up the bag's inventory you must
 4) View bag contents
 
 
-### ToDo:
-* Add configuration for each bag size
-* Add configuration for the toggle
-
-
 #### Huge thanks to:
 * Blaxxun - Code Contribution
 * Evie (CinnaBun) - BackPack Models
@@ -82,3 +77,16 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 
 ### V0.1.5
 * Fixed issue where Jude's bags had no inventory displayed
+
+
+### V0.1.6
+* Fixed issue with teleportation while holding a bag
+
+### V0.1.7
+* Fixed issue when upgrading bag and having equipped inventory slot size did not increase
+* added configuration values for bag starting sizes
+* added configuration value for key to open bag 
+
+### V0.1.8
+* Fixed issue with Judes bags not grabbing slot size
+* Fixed issue where if you didnt edit bag contents and unequipped it was not saved
