@@ -18,7 +18,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.1.8";
+        internal const string ModVersion = "0.1.9";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -79,13 +79,16 @@ namespace BackPacks
         {
             if (itemdata.IsBackpack())
             {
-                if (Player.m_localPlayer == null) return;
                 itemdata = itemdata.ExtendedClone();
                 var inv = itemdata.GetBagInv();
                 itemdata.m_shared.m_teleportable = inv!.IsTeleportable();
+                itemdata.Extended().m_shared.m_teleportable = inv!.IsTeleportable();
                 itemdata.m_shared.m_weight = 4f;
+                itemdata.Extended().m_shared.m_weight = 4f;
                 var temp = inv!.m_totalWeight;
                 itemdata.m_shared.m_weight += temp;
+                itemdata.Extended().m_shared.m_weight += temp;
+                if (Player.m_localPlayer == null) return;
                 Player.m_localPlayer.m_inventory.UpdateTotalWeight();
             }
         }
@@ -217,6 +220,10 @@ namespace BackPacks
             IronBag.Description.German("Ein rauer Rucksack, inklusive Schnallen und feinen Lederriemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
                                        +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierIron!.Value)} </color>"
                                        +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusIron!.Value}</color>");
+            IronBag.Name.Russian("Прочный рюкзак");
+            IronBag.Description.Russian("Обычный рюкзак может хранить различные предметы. Чем больше вы повышаете уровень этого рюкзака, тем больше места!"+
+                                        $" \n \n Снижение веса: <color=orange>{String.Format("{0:P2}.", CarryModifierIron!.Value)} </color>"
+                                        +$"Максимальное увеличение переноса: <color=orange> {CarryBonusIron!.Value}</color>" );
             //Crafting
             IronBag.Crafting.Add(CraftingTable.Workbench, 1);
             IronBag.RequiredItems.Add("Bronze", 8);
@@ -244,6 +251,10 @@ namespace BackPacks
             SilverBag.Description.German("Ein guter Rucksack, mit in Handarbeit hergestellten Riemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
                                           +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierSilver!.Value)} </color>"
                                           +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusSilver!.Value}</color>");
+            SilverBag.Name.Russian("");
+            SilverBag.Description.Russian("Хороший рюкзак с ремешками ручной работы. Чем выше уровень этой сумки, тем больше места!"+
+                                          $"\n \n Снижение веса: <color=orange> {CarryBonusSilver!.Value}</color>"+
+                                          "Максимальное увеличение переноса: <color=orange> {CarryBonusSilver!.Value}</color>");
             //Crafting
             SilverBag.Crafting.Add(CraftingTable.Workbench, 1);
             SilverBag.RequiredItems.Add("Silver", 23);
@@ -270,6 +281,11 @@ namespace BackPacks
             LeatherBag.Description.German("Ein gewöhnlicher Rucksack, in dem verschiedene Gegenstände verstaut werden können. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
                                            +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierLeather!.Value)} </color>"
                                            +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusLeather!.Value}</color>");
+            LeatherBag.Name.Russian("Обычный рюкзак");
+            LeatherBag.Description.Russian(
+                "Обычный рюкзак может хранить различные предметы. Чем больше вы повышаете уровень этого рюкзака, тем больше места!" +
+                $" \n \n Снижение веса:<color=orange> {String.Format("{0:P2}.", CarryModifierLeather!.Value)} </color>"
+                +$"\n Максимальное увеличение переноса: <color=orange> {CarryBonusLeather!.Value}</color>");
             //Crafting
             LeatherBag.Crafting.Add(CraftingTable.Workbench, 1);
             LeatherBag.RequiredItems.Add("LeatherScraps", 30);

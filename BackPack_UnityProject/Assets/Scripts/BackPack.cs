@@ -29,9 +29,11 @@ public class BackPack : Container
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
     internal static BagTier StaticTier;
-    private Text? text;
+    private static Text? text;
     
     private static BackPack? m_instance;
+    internal static GameObject? AuguaTrashThing;
+    internal static GameObject? AugaBackPackTip;
     public static BackPack? instance => m_instance;
     public float Result { get; private set; }
     public void CloseBag() => InventoryGui.instance.CloseContainer();
@@ -128,7 +130,14 @@ public class BackPack : Container
     }
     internal void DisableHelpText()
     {
-        if(text) text!.gameObject.SetActive(false);   
+        if (Auga.API.IsLoaded())
+        {
+            AugaBackPackTip?.SetActive(false);
+        }
+        else
+        {
+            if(text) text!.gameObject.SetActive(false); 
+        }  
     }
 
     internal void StartCoroutines()
@@ -159,6 +168,11 @@ public class BackPack : Container
         if(InventoryGui.instance.m_container.gameObject.activeInHierarchy) CloseBag();
         Player.m_localPlayer?.m_shoulderItem.Extended()?.Save();
         StaticTier = tier;
+        if (Auga.API.IsLoaded())
+        {
+            text = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip/Content/Text")
+                .gameObject.GetComponent<Text>();
+        }
 #endif
     }
     internal void OnDestroy()
@@ -186,7 +200,6 @@ public class BackPack : Container
         if(Player.m_localPlayer == null) return;
         if (!Player.m_localPlayer.IsOnGround()) return;
         if (Player.m_localPlayer.IsDead()) return;
-        
         if (!InventoryGui.IsVisible()) return;
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(BackPacks.BackPacks.OpenInventoryKey!.Value))
         {
@@ -200,28 +213,50 @@ public class BackPack : Container
             }
         }
         if (!InventoryGui.instance.isActiveAndEnabled) return;
-        text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
-            .GetComponent<Text>();
+        if (Auga.API.IsLoaded())
+        {
+            AugaBackPackTip = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip").gameObject;
+        }
+        else
+        {
+            text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
+                .GetComponent<Text>();
+        }
+
         if (Player.m_localPlayer.m_shoulderItem == null)
         {
-            if(text)text.gameObject.SetActive(false);
+            if(text)text!.gameObject.SetActive(false);
             return;
         }
-                     
-        var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
-        if (flag)
+        if (Auga.API.IsLoaded())
         {
-            if(!text) return;
-            text.gameObject.SetActive(true);
+            var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
+            if (!flag) return;
+            if (!text) return;
+            AugaBackPackTip!.SetActive(true);
+            text!.text =
+                $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
+        }
+        else
+        {
+            var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
+            if (!flag) return;
+            if (!text) return;
+            text!.gameObject.SetActive(true);
             text.fontSize = 16;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject.GetComponent<Text>()
+            text.font = InventoryGui.instance.gameObject.transform.Find("root/Player/Weight/weight_text").gameObject
+                .GetComponent<Text>()
                 .font;
-            text.text = $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
-                        
+            text.text =
+                $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
         }
 #endif
+    }
+    private static void OnTabSelected(int index)
+    {
+        Debug.LogWarning("Example Tab Selected");
     }
 
     #endregion

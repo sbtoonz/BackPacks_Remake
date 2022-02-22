@@ -4,6 +4,7 @@ using System.Linq;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
 using Debug = System.Diagnostics.Debug;
 
 namespace BackPacks
@@ -254,8 +255,48 @@ namespace BackPacks
                 SilverBag.gameObject.GetComponent<ItemDrop>().m_itemData.m_shared.m_equipStatusEffect = SE;
             }
         }
-        
-        
+
+        [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
+        public static class AssignAuga
+        {
+            public static void Postfix(InventoryGui __instance)
+            {
+                if (!Auga.API.IsLoaded()) return;
+                BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/TrashDivider").gameObject;
+                BackPack.AugaBackPackTip = InstantiatePrefab.Instantiate(BackPack.AuguaTrashThing,
+                    InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
+                BackPack.AugaBackPackTip.gameObject.name = "BackPackToolTip";
+                var localPosition = BackPack.AugaBackPackTip.transform.localPosition;
+                var ypos = localPosition.y;
+                ypos -= 25;
+                localPosition =
+                    new Vector3(localPosition.x, ypos, localPosition.z);
+                BackPack.AugaBackPackTip.transform.localPosition = localPosition;
+                BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip/Content").gameObject;
+                var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
+                icon.gameObject.SetActive(false);
+            }
+        }
+
+
+        [HarmonyPatch(typeof(Container), nameof(Container.Load))]
+        public static class DragItemPatch
+        {
+            private static Inventory temp = new Inventory("", null, 100, 100);
+            public static void Postfix(Container __instance)
+            {
+                List<ItemDrop.ItemData> templist = new List<ItemDrop.ItemData>();
+                temp = __instance.m_inventory;
+                foreach (var VARIABLE in temp.m_inventory)
+                {
+                    VARIABLE.Extended().Load();
+                    templist.Add(VARIABLE.Extended());
+                }
+                __instance.m_inventory.m_inventory = templist;
+            }
+        }
+
+
         internal static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {
 	        var playerInventory = player.GetInventory();

@@ -64,6 +64,9 @@
     <Reference Include="assembly_valheim_publicized">
       <HintPath>$(GamePath)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
     </Reference>
+    <Reference Include="AugaAPI">
+      <HintPath>Libs\AugaAPI.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
@@ -277,6 +280,7 @@
     <Compile Include="SECarryWeight.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libs\AugaAPI.dll" />
     <Content Include="ThunderStore_Release\manifest.json" />
     <Content Include="ThunderStore_Release\README.md" />
     <None Include="Assets\backpackdrop" />
