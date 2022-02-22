@@ -132,7 +132,7 @@ public class BackPack : Container
     {
         if (Auga.API.IsLoaded())
         {
-            AugaBackPackTip?.SetActive(false);
+            if(AugaBackPackTip != null) AugaBackPackTip.SetActive(false);
         }
         else
         {

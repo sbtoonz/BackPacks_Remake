@@ -262,6 +262,7 @@ namespace BackPacks
             public static void Postfix(InventoryGui __instance)
             {
                 if (!Auga.API.IsLoaded()) return;
+                if (BackPack.AugaBackPackTip != null) return;
                 BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/TrashDivider").gameObject;
                 BackPack.AugaBackPackTip = InstantiatePrefab.Instantiate(BackPack.AuguaTrashThing,
                     InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
@@ -275,24 +276,6 @@ namespace BackPacks
                 BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip/Content").gameObject;
                 var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
                 icon.gameObject.SetActive(false);
-            }
-        }
-
-
-        [HarmonyPatch(typeof(Container), nameof(Container.Load))]
-        public static class DragItemPatch
-        {
-            private static Inventory temp = new Inventory("", null, 100, 100);
-            public static void Postfix(Container __instance)
-            {
-                List<ItemDrop.ItemData> templist = new List<ItemDrop.ItemData>();
-                temp = __instance.m_inventory;
-                foreach (var VARIABLE in temp.m_inventory)
-                {
-                    VARIABLE.Extended().Load();
-                    templist.Add(VARIABLE.Extended());
-                }
-                __instance.m_inventory.m_inventory = templist;
             }
         }
 
