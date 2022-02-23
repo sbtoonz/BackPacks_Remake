@@ -233,12 +233,12 @@ namespace BackPacks
                                         +$"Максимальное увеличение переноса: <color=orange> {CarryBonusIron!.Value}</color>" );
             //Crafting
             IronBag.Crafting.Add(CraftingTable.Workbench, 1);
-            IronBag.RequiredItems.Add("Bronze", 8);
+            IronBag.RequiredItems.Add("Iron", 8);
             IronBag.RequiredItems.Add("LeatherScraps", 60);
             IronBag.RequiredItems.Add("DeerHide", 5);
             IronBag.CraftAmount = 1;
             //Upgrades
-            IronBag.RequiredUpgradeItems.Add("Bronze", 20);
+            IronBag.RequiredUpgradeItems.Add("Iron", 20);
             IronBag.RequiredUpgradeItems.Add("LeatherScraps", 5);
             var id = IronBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierIron!.Value;
@@ -264,12 +264,12 @@ namespace BackPacks
                                           "Максимальное увеличение переноса: <color=orange> {CarryBonusSilver!.Value}</color>");
             //Crafting
             SilverBag.Crafting.Add(CraftingTable.Workbench, 1);
-            SilverBag.RequiredItems.Add("Silver", 23);
+            SilverBag.RequiredItems.Add("Silver", 20);
             SilverBag.RequiredItems.Add("LeatherScraps", 60);
             SilverBag.RequiredItems.Add("WolfPelt", 7);
             SilverBag.CraftAmount = 1;
             //Upgrades
-            SilverBag.RequiredUpgradeItems.Add("Silver", 20);
+            SilverBag.RequiredUpgradeItems.Add("Silver", 50);
             SilverBag.RequiredUpgradeItems.Add("WolfPelt", 5);
             var id = SilverBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierSilver!.Value;

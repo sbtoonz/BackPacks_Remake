@@ -106,3 +106,7 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 
 ### V0.2.2
 * Fixed issue with Fejd loading EIDF and causing NRE (Red text)
+
+### V0.2.3
+* Added configuration option to allow bag contents to be removed upon unequipping of the bag. This option when set to true forces the contents of the bag to be thrown onto the ground near the player when the bag is unequipped;
+* Changed upgrade cost of rugged bag to use Iron instead of copper (missed on my end)
