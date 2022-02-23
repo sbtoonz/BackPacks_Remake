@@ -57,6 +57,7 @@ namespace BackPacks
         internal static ConfigEntry<Vector3>? UnknownBagSize;
         internal static ConfigEntry<KeyCode>? OpenInventoryKey;
         internal static ConfigEntry<bool>? dropallOnUnEquip;
+        internal static ConfigEntry<bool>? showToolTipText;
 
 
         internal static SE_Stats? CarryStat;

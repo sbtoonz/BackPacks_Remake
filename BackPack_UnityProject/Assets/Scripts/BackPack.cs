@@ -33,10 +33,8 @@ public class BackPack : Container
     internal static BagTier StaticTier;
     private static Text? text;
     
-    private static BackPack? m_instance;
     internal static GameObject? AuguaTrashThing;
     internal static GameObject? AugaBackPackTip;
-    public static BackPack? instance => m_instance;
     public float Result { get; private set; }
     public void CloseBag() => InventoryGui.instance.CloseContainer();
 
@@ -105,6 +103,9 @@ public class BackPack : Container
     {
         if ((bool)m_nview && m_nview.IsOwner())
         {
+            string checkstring = "RequestBagOpen";
+            int checkhash = checkstring.GetStableHashCode();
+            if (m_nview.m_functions.ContainsKey(checkhash)) return;
             m_nview.Register<long>("RequestBagOpen", RPC_RequestOpenBag);
             m_nview.Register<bool>("OpenBagResponse", RPC_OpenBagResponse);
             m_nview.Register<long>("RequestBagTakeAll", RPC_RequestTakeAllFromBag);
@@ -158,7 +159,6 @@ public class BackPack : Container
 
     internal new void Awake()
     {
-        m_instance = this;
 #if UNITY_COMPILEFLAG
         if (Player.m_localPlayer == null)
         {
@@ -185,16 +185,13 @@ public class BackPack : Container
     internal void OnDestroy()
     {
 #if UNITY_COMPILEFLAG
-        if (m_instance == this)
-        {
-            m_instance = null;
-            bagdata = null;
-        }
+        bagdata = null;
 #endif
     }
     
     private new void DropAllItems()
     {
+        if(bagdata == null) return;
         List<ItemDrop.ItemData> allItems = bagdata!.GetBagInv()!.GetAllItems();
         int num = 1;
         foreach (ItemDrop.ItemData item in allItems)
@@ -236,7 +233,8 @@ public class BackPack : Container
         {
             try
             {
-                m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                InventoryGui.instance.Show(this);
+                //m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
             }
             catch (Exception)
             {

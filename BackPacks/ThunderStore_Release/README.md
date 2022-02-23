@@ -119,4 +119,4 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
   * Resolved issue where if YOU upgraded or unequipped your bag other players lost access to their bags
   * Renamed RPC methods for bag, avoids issues if you try to open a container after equipping your bag in multiplayer
   * Added RPC Method for admin to peek bag contents (needs testing before implementing into a tool)
-
+  **IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB**

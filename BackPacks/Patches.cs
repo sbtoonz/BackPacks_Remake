@@ -92,41 +92,46 @@ namespace BackPacks
 
             private static void Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
             {
-                if (!__instance.IsPlayer()) return;
-                if (!item.IsBackpack()) return;
-                switch (item.m_shared.m_itemType)
+                try
                 {
-                    case ItemDrop.ItemData.ItemType.Shoulder:
-                       
-                            if(BackPack.instance != null)
+                    if (Player.m_localPlayer == null) return;
+                    if (__instance.m_nview.GetZDO().m_uid != Player.m_localPlayer.m_nview.GetZDO().m_uid) return;
+                    if (!item.IsBackpack()) return;
+                    switch (item.m_shared.m_itemType)
+                    {
+                        case ItemDrop.ItemData.ItemType.Shoulder: 
+                            if (__instance.IsPlayer() && __instance.IsDead())
                             {
-                                if (__instance.IsPlayer() && __instance.IsDead())
-                                {
-                                    return;
-                                }
+                                return;
+                            }
 
-                                if (__instance.IsTeleporting())
-                                {
-                                    return;
-                                }
-                                if (Player.m_localPlayer.m_shoulderItem == null) return;
-                                if (Player.m_localPlayer.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
-                                if (Player.m_localPlayer.m_shoulderItem.Extended().GetBagInv() != item.GetBagInv())
-                                {
-                                    var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
-                                    bag.CloseBag();
-                                    bag.DeRegisterRPC();
-                                    bag.StopCoroutines();
-                                    bag.ApplyConfigToInventory();
-                                    bag.AssignInventory(item.GetBagInv()!);
-                                    bag.LoadBagContents();
-                                    bag.AssignContainerSize(item.Extended().m_quality);
-                                    bag.StartCoroutines();
-                                    bag.RegisterRPC();
-                                }
+                            if (__instance.IsTeleporting())
+                            {
+                                return;
+                            }
+                            if (Player.m_localPlayer.m_shoulderItem == null) return;
+                            if (Player.m_localPlayer.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
+                            if (Player.m_localPlayer.m_shoulderItem.Extended().GetBagInv() != item.GetBagInv())
+                            {
+                                var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
+                                bag.CloseBag();
+                                bag.DeRegisterRPC();
+                                bag.StopCoroutines();
+                                bag.ApplyConfigToInventory();
+                                bag.AssignInventory(item.GetBagInv()!);
+                                bag.LoadBagContents();
+                                bag.AssignContainerSize(item.Extended().m_quality);
+                                bag.StartCoroutines();
+                                bag.RegisterRPC();
                             }
                             break;
+                    }
                 }
+                catch (Exception)
+                {
+                    //ignored
+                }
+                
             }
         }
 
