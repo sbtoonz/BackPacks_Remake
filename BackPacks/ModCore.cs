@@ -18,7 +18,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.2.3";
+        internal const string ModVersion = "0.2.4";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
