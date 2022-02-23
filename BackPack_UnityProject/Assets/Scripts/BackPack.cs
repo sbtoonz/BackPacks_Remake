@@ -103,7 +103,7 @@ public class BackPack : Container
     
     internal void RegisterRPC()
     {
-        if ((bool)m_nview)
+        if ((bool)m_nview && m_nview.IsOwner())
         {
             m_nview.Register<long>("RequestOpen", RPC_RequestOpen);
             m_nview.Register<bool>("OpenRespons", RPC_OpenRespons);
@@ -116,12 +116,15 @@ public class BackPack : Container
     
     internal void DeRegisterRPC()
     {
-        m_nview.Unregister("RequestOpen");
-        m_nview.Unregister("OpenRespons");
-        m_nview.Unregister("RequestTakeAll");
-        m_nview.Unregister("TakeAllRespons");
-        m_nview.Unregister("AdminInspectReq");
-        m_nview.Unregister("AdminInspectRespons"); 
+        if ((bool)m_nview && m_nview.IsOwner())
+        {
+            m_nview.Unregister("RequestOpen");
+            m_nview.Unregister("OpenRespons");
+            m_nview.Unregister("RequestTakeAll");
+            m_nview.Unregister("TakeAllRespons");
+            m_nview.Unregister("AdminInspectReq");
+            m_nview.Unregister("AdminInspectRespons");
+        }
     }
 
     internal void StopCoroutines()

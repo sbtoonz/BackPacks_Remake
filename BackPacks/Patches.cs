@@ -46,13 +46,14 @@ namespace BackPacks
                     upgradeItem.m_durability = upgradeItem.GetMaxDurability();
                     if (upgradeItem.IsBackpack())
                     {
-                        if (BackPack.instance != null)
+                        var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
+                        if (bag != null)
                         {
-                            BackPack.instance.CloseBag();
-                            BackPack.instance.StopCoroutines();
-                            BackPack.instance.ApplyConfigToInventory();
-                            BackPack.instance.AssignContainerSize(upgradeItem.Extended().m_quality);
-                            BackPack.instance.StartCoroutines();
+                            bag.CloseBag();
+                            bag.StopCoroutines();
+                            bag.ApplyConfigToInventory();
+                            bag.AssignContainerSize(upgradeItem.Extended().m_quality);
+                            bag.StartCoroutines();
                         }
                     }
                     if (!player.NoCostCheat())
@@ -91,7 +92,7 @@ namespace BackPacks
 
             private static void Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
             {
-                if (__instance != Player.m_localPlayer) return;
+                if (!__instance.IsPlayer()) return;
                 if (!item.IsBackpack()) return;
                 switch (item.m_shared.m_itemType)
                 {
@@ -109,18 +110,19 @@ namespace BackPacks
                                     return;
                                 }
                                 if (Player.m_localPlayer.m_shoulderItem == null) return;
-                                if (__instance.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
-                                if (BackPack.instance.m_inventory != item.GetBagInv())
+                                if (Player.m_localPlayer.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
+                                if (Player.m_localPlayer.m_shoulderItem.Extended().GetBagInv() != item.GetBagInv())
                                 {
-                                    BackPack.instance.CloseBag();
-                                    BackPack.instance.DeRegisterRPC();
-                                    BackPack.instance.StopCoroutines();
-                                    BackPack.instance.ApplyConfigToInventory();
-                                    BackPack.instance.AssignInventory(item.GetBagInv()!);
-                                    BackPack.instance.LoadBagContents();
-                                    BackPack.instance.AssignContainerSize(item.Extended().m_quality);
-                                    BackPack.instance.StartCoroutines();
-                                    BackPack.instance.RegisterRPC();
+                                    var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
+                                    bag.CloseBag();
+                                    bag.DeRegisterRPC();
+                                    bag.StopCoroutines();
+                                    bag.ApplyConfigToInventory();
+                                    bag.AssignInventory(item.GetBagInv()!);
+                                    bag.LoadBagContents();
+                                    bag.AssignContainerSize(item.Extended().m_quality);
+                                    bag.StartCoroutines();
+                                    bag.RegisterRPC();
                                 }
                             }
                             break;
