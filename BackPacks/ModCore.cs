@@ -18,7 +18,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.2.0";
+        internal const string ModVersion = "0.2.2";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         
@@ -56,6 +56,7 @@ namespace BackPacks
         internal static ConfigEntry<Vector3>? LeatherBagSize;
         internal static ConfigEntry<Vector3>? UnknownBagSize;
         internal static ConfigEntry<KeyCode>? OpenInventoryKey;
+        internal static ConfigEntry<bool>? dropallOnUnEquip;
 
 
         internal static SE_Stats? CarryStat;
@@ -79,8 +80,10 @@ namespace BackPacks
         {
             if (itemdata.IsBackpack())
             {
+                if (FejdStartup.instance != null) return;
                 itemdata = itemdata.ExtendedClone();
                 var inv = itemdata.GetBagInv();
+                if(inv == null) return;
                 itemdata.m_shared.m_teleportable = inv!.IsTeleportable();
                 itemdata.Extended().m_shared.m_teleportable = inv!.IsTeleportable();
                 itemdata.m_shared.m_weight = 4f;
@@ -204,6 +207,10 @@ namespace BackPacks
                 "Modifier key to use when opening bag contents");
 
             #endregion
+
+            dropallOnUnEquip = config("General", "Drop all bag contents on unequip", false,
+                "If set to true the bag will drop all its items when coming off player shoulders");
+            
             
             configSync.AddLockingConfigEntry(serverConfigLocked);
         }
@@ -251,7 +258,7 @@ namespace BackPacks
             SilverBag.Description.German("Ein guter Rucksack, mit in Handarbeit hergestellten Riemen. Je höher die Stufe des Rucksacks, desto mehr kann in ihm verstaut werden."
                                           +$" \n \n Gewichtsreduktion: <color=orange> {String.Format("{0:P2}.", CarryModifierSilver!.Value)} </color>"
                                           +$"\n Erhöhung des max. Tragegewichts: <color=orange> {CarryBonusSilver!.Value}</color>");
-            SilverBag.Name.Russian("");
+            SilverBag.Name.Russian("Хороший рюкзак");
             SilverBag.Description.Russian("Хороший рюкзак с ремешками ручной работы. Чем выше уровень этой сумки, тем больше места!"+
                                           $"\n \n Снижение веса: <color=orange> {CarryBonusSilver!.Value}</color>"+
                                           "Максимальное увеличение переноса: <color=orange> {CarryBonusSilver!.Value}</color>");

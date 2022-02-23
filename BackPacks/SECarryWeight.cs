@@ -2,12 +2,11 @@
 {
     public class SeCarryWeight : SE_Stats
     {
-        internal SeCarryWeight()
+        internal void OnEnable()
         {
             name = "SECarryWeight";
             m_name = "";
         }
-
         public override void UpdateStatusEffect(float dt)
         {
             base.UpdateStatusEffect(dt);

@@ -8,8 +8,9 @@ using ExtendedItemDataFramework;
 using UnityEngine.UI;
 #endif
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-    
+
 public class BackPack : Container
 {
     [Serializable]
@@ -25,6 +26,7 @@ public class BackPack : Container
     public BagTier tier = BagTier.UnKnown;
     public int fixedWidth = 0;
     public int fixedHeight = 0;
+    public ExtendedItemData bagdata;
 
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
@@ -159,6 +161,7 @@ public class BackPack : Container
         {
             return;
         }
+        bagdata = Player.m_localPlayer.m_shoulderItem.Extended();
         if (Player.m_localPlayer != null) m_nview = Player.m_localPlayer.m_nview;
         ApplyConfigToInventory();
         SetupInventory();
@@ -175,20 +178,45 @@ public class BackPack : Container
         }
 #endif
     }
+    
     internal void OnDestroy()
     {
 #if UNITY_COMPILEFLAG
         if (m_instance == this)
         {
             m_instance = null;
-
+            bagdata = null;
         }
 #endif
+    }
+    
+    private new void DropAllItems()
+    {
+        List<ItemDrop.ItemData> allItems = bagdata.GetBagInv().GetAllItems();
+        int num = 1;
+        foreach (ItemDrop.ItemData item in allItems)
+        {
+            Vector3 position = base.transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * 0.3f;
+            Quaternion rotation = Quaternion.Euler(0f, Random.Range(0, 360), 0f);
+            ItemDrop.DropItem(item, 0, position, rotation);
+            num++;
+        }
+        bagdata.GetBagInv().RemoveAll();
     }
     internal void OnDisable()
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
+        if (BackPacks.BackPacks.dropallOnUnEquip.Value)
+        {
+            if (ZNetScene.instance == null) return;
+            DropAllItems();
+            var zPackage = new ZPackage();
+            bagdata.GetBagInv().Save(zPackage);
+            bagdata.GetComponent<BackPackData>().PackData = zPackage.GetBase64();
+            bagdata.Extended().m_shared.m_teleportable = bagdata.GetBagInv().IsTeleportable();
+            bagdata.Extended().Save();
+        }
         DeRegisterRPC();
         StopCoroutines();
         DisableHelpText();
@@ -253,10 +281,6 @@ public class BackPack : Container
                 $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
         }
 #endif
-    }
-    private static void OnTabSelected(int index)
-    {
-        Debug.LogWarning("Example Tab Selected");
     }
 
     #endregion
@@ -328,7 +352,8 @@ public class BackPack : Container
         private void OnBackPackChange()
     {
 #if UNITY_COMPILEFLAG
-        if (!m_loading && IsOwner())
+        if (m_nview == null) return;
+        if (!m_loading && m_nview.IsOwner())
         {
             List<ItemDrop.ItemData> items = m_inventory.GetAllItems();
             var player = Player.m_localPlayer;
