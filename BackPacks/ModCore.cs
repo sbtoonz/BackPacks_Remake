@@ -4,6 +4,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using ItemManager;
@@ -21,10 +22,12 @@ namespace BackPacks
         internal const string ModVersion = "0.2.4";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
+        internal static ManualLogSource _logSource = new ManualLogSource(ModName);
         
 #pragma warning disable CS0649
         internal static AssetBundle? EviesBackPacks;
-        internal static AssetBundle? BackpackDrops;
+        internal static AssetBundle? backpackUI;
+        internal static GameObject? backpackAdmin;
 #pragma warning restore CS0649
 
         internal static Item? IronBag;
@@ -35,7 +38,7 @@ namespace BackPacks
         ConfigSync configSync = new(ModGUID) 
             { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion};
         
-        private static ConfigEntry<bool> serverConfigLocked = null!;
+        internal static ConfigEntry<bool> ServerConfigLocked = null!;
         internal static ConfigEntry<bool>? AlterCarryWeight;
         internal static ConfigEntry<float>? CarryModifierLeather;
         internal static ConfigEntry<float>? CarryModifierIron;
@@ -56,13 +59,14 @@ namespace BackPacks
         internal static ConfigEntry<Vector3>? LeatherBagSize;
         internal static ConfigEntry<Vector3>? UnknownBagSize;
         internal static ConfigEntry<KeyCode>? OpenInventoryKey;
-        internal static ConfigEntry<bool>? dropallOnUnEquip;
-        internal static ConfigEntry<bool>? showToolTipText;
+        internal static ConfigEntry<bool>? DropallOnUnEquip;
+        internal static ConfigEntry<bool>? ShowToolTipText;
 
 
         internal static SE_Stats? CarryStat;
         public void Awake()
         {
+            _logSource = Logger;
             Assembly assembly = Assembly.GetExecutingAssembly();
             harmony = new(ModGUID);
             harmony.PatchAll(assembly);
@@ -74,7 +78,9 @@ namespace BackPacks
             ExtendedItemData.NewExtendedItemData += SaveEIDF;
             ExtendedItemData.LoadExtendedItemData += LoadEIDF;
             ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.DataID, typeof(BackPack.BackPackData));
-            
+            backpackUI = LoadAssetBundle("backpackui");
+            backpackAdmin = backpackUI.LoadAsset<GameObject>("BackPack_Admin");
+            backpackUI.Unload(false);
         }
 
         private void LoadEIDF(ExtendedItemData itemdata)
@@ -96,7 +102,6 @@ namespace BackPacks
                 Player.m_localPlayer.m_inventory.UpdateTotalWeight();
             }
         }
-
         private void SaveEIDF(ExtendedItemData itemdata)
         {
             var itemName = itemdata.m_shared.m_name;
@@ -111,7 +116,6 @@ namespace BackPacks
                 }
             }
         }
-
         private void Start()
         {
             try
@@ -126,11 +130,11 @@ namespace BackPacks
             {
                 // ignored
             }
-        }
 
+        }
         private void LoadConfigs()
         {
-            serverConfigLocked = config("1 - General", "Lock Configuration", true, "If on, the configuration is locked and can be changed by server admins only.");
+            ServerConfigLocked = config("1 - General", "Lock Configuration", true, "If on, the configuration is locked and can be changed by server admins only.");
 
             #region  Carry Weight
 
@@ -209,13 +213,12 @@ namespace BackPacks
 
             #endregion
 
-            dropallOnUnEquip = config("General", "Drop all bag contents on unequip", false,
+            DropallOnUnEquip = config("General", "Drop all bag contents on unequip", false,
                 "If set to true the bag will drop all its items when coming off player shoulders");
             
             
-            configSync.AddLockingConfigEntry(serverConfigLocked);
+            configSync.AddLockingConfigEntry(ServerConfigLocked);
         }
-        
         private void SetupIronBag()
         {
             IronBag = new Item("backpacks", "CapeIronBackpackZ", "Assets");
@@ -246,7 +249,6 @@ namespace BackPacks
 
             
         }
-
         private void SetupSilverBag()
         {
             SilverBag = new Item("backpacks", "CapeSilverBackpackZ", "Assets");
@@ -275,8 +277,6 @@ namespace BackPacks
             var id = SilverBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierSilver!.Value;
         }
-
-
         private void SetupLeatherBag()
         {
             LeatherBag = new Item("backpacks", "CapeLeatherBackpackZ", "Assets");
@@ -305,7 +305,6 @@ namespace BackPacks
             var id = LeatherBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierLeather!.Value;
         }
-        
         public void OnDestroy()
         {
             harmony.UnpatchSelf();

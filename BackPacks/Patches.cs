@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using ExtendedItemDataFramework;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = System.Diagnostics.Debug;
+using Object = UnityEngine.Object;
 
 namespace BackPacks
 {
-    public class Patches
+    public static class Patches
     {
 
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
         public static class InventoryGui_DoCrafting_Patch
         {
+            [UsedImplicitly]
             public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)
             {
                 if (!__runOriginal || __instance.m_craftRecipe == null)
@@ -90,6 +93,7 @@ namespace BackPacks
         public static class EquipItemPatch
         {
 
+            [UsedImplicitly]
             private static void Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
             {
                 try
@@ -139,6 +143,7 @@ namespace BackPacks
         [HarmonyAfter("GoldenJude_JudesEquipment")]
         public static class JudeBagPatch
         {
+            [UsedImplicitly]
             public static void Postfix(ObjectDB __instance)
             {
                 if (__instance.m_StatusEffects.Count <= 0) return;
@@ -202,6 +207,7 @@ namespace BackPacks
         [HarmonyAfter("GoldenJude_JudesEquipment")]
         public static class JudeBagOtherPatch
         {
+            [UsedImplicitly]
             public static void Postfix(ObjectDB __instance)
             {
                 if (__instance.m_StatusEffects.Count <= 0) return;
@@ -266,26 +272,39 @@ namespace BackPacks
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
         public static class AssignAuga
         {
+            [UsedImplicitly]
             public static void Postfix(InventoryGui __instance)
             {
-                if (!Auga.API.IsLoaded()) return;
-                if (BackPack.AugaBackPackTip != null) return;
-                BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/TrashDivider").gameObject;
-                BackPack.AugaBackPackTip = InstantiatePrefab.Instantiate(BackPack.AuguaTrashThing,
-                    InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
-                BackPack.AugaBackPackTip.gameObject.name = "BackPackToolTip";
-                var localPosition = BackPack.AugaBackPackTip.transform.localPosition;
-                var ypos = localPosition.y;
-                ypos -= 25;
-                localPosition =
-                    new Vector3(localPosition.x, ypos, localPosition.z);
-                BackPack.AugaBackPackTip.transform.localPosition = localPosition;
-                BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip/Content").gameObject;
-                var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
-                icon.gameObject.SetActive(false);
+                if (Auga.API.IsLoaded())
+                {
+                    if (BackPack.AugaBackPackTip != null) return;
+                    BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform
+                        .Find("root/Player/TrashDivider").gameObject;
+                    BackPack.AugaBackPackTip = InstantiatePrefab.Instantiate(BackPack.AuguaTrashThing,
+                        InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
+                    BackPack.AugaBackPackTip.gameObject.name = "BackPackToolTip";
+                    var localPosition = BackPack.AugaBackPackTip.transform.localPosition;
+                    var ypos = localPosition.y;
+                    ypos -= 25;
+                    localPosition =
+                        new Vector3(localPosition.x, ypos, localPosition.z);
+                    BackPack.AugaBackPackTip.transform.localPosition = localPosition;
+                    BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform
+                        .Find("root/Player/BackPackToolTip/Content").gameObject;
+                    var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
+                    icon.gameObject.SetActive(false);
+                }
+                BackPacks.backpackAdmin = Object.Instantiate(BackPacks.backpackAdmin, InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
+                BackPacks.backpackAdmin.SetActive(false);
+                var panel = BackPacks.backpackAdmin.GetComponent<BagAdminPanel>();
+                panel.m_Bkg.sprite = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject.GetComponent<Image>().sprite;
+                panel.m_Bkg.material = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject
+                    .GetComponent<Image>().material;
+                
             }
         }
 
+        
 
         internal static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {

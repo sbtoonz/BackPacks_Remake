@@ -110,21 +110,18 @@ public class BackPack : Container
             m_nview.Register<bool>("OpenBagResponse", RPC_OpenBagResponse);
             m_nview.Register<long>("RequestBagTakeAll", RPC_RequestTakeAllFromBag);
             m_nview.Register<bool>("TakeAllBagResponse", RPC_TakeBagAllResponse);
-            m_nview.Register<string>("AdminInspectReq", RPC_AdminPeekContentsReq);
-            m_nview.Register<string>("AdminInspectResponse", RPC_AdminPeekContentsResponse);
         }
     }
     
     internal void DeRegisterRPC()
     {
+        if(m_nview == null) return;
         if ((bool)m_nview && m_nview.IsOwner())
         {
             m_nview.Unregister("RequestBagOpen");
             m_nview.Unregister("OpenBagResponse");
             m_nview.Unregister("RequestBagTakeAll");
             m_nview.Unregister("TakeAllBagResponse");
-            m_nview.Unregister("AdminInspectReq");
-            m_nview.Unregister("AdminInspectResponse");
         }
     }
 
@@ -207,7 +204,7 @@ public class BackPack : Container
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
-        if (BackPacks.BackPacks.dropallOnUnEquip!.Value)
+        if (BackPacks.BackPacks.DropallOnUnEquip!.Value)
         {
             if (ZNetScene.instance == null) return;
             DropAllItems();
@@ -432,26 +429,8 @@ public class BackPack : Container
     #region RPCs
 
 #if UNITY_COMPILEFLAG
-    private void RPC_AdminPeekContentsResponse(long uid, string s)
-    {
-        ZLog.Log("Admin " + uid + " Wants to inspect: " + base.gameObject.name + " im: " + ZDOMan.instance.GetMyID());
-        InventoryGui.instance.Show(this);
 
-    }
-
-    private void RPC_AdminPeekContentsReq(long uid, string playerName)
-    {
-        if(ZNet.instance.m_adminList.Contains(playerName))
-        {
-            m_nview.InvokeRPC(uid, "AdminInspectResponse", "");
-        }
-        else
-        {
-            Debug.Log("Non admin invoking inspect command");
-        }
-    }
-    
-    	private void RPC_RequestOpenBag(long uid, long playerID)
+    private void RPC_RequestOpenBag(long uid, long playerID)
 	{
 		ZLog.Log("Player " + uid + " wants to open " + base.gameObject.name + "   im: " + ZDOMan.instance.GetMyID());
 		if (!m_nview.IsOwner())
@@ -534,6 +513,16 @@ public class BackPack : Container
         {
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_inuse");
         }
+    }
+    
+    public static string Base64Encode(string plainText) {
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        return System.Convert.ToBase64String(plainTextBytes);
+    }
+    
+    public static string Base64Decode(string base64EncodedData) {
+        var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+        return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
     }
 #endif
 

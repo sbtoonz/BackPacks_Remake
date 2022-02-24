@@ -275,11 +275,18 @@
       <Link>MonoScripts\BackPack.cs</Link>
     </Compile>
     <Compile Include="ModCore.cs" />
+    <Compile Include="MonoScripts\BagAdminPanel.cs" />
+    <Compile Include="MonoScripts\BagElement.cs" />
+    <Compile Include="MonoScripts\DragHandler.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RPCs.cs" />
     <Compile Include="SECarryWeight.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="D:\AdminToolZ\Assets\AssetBundles\backpackui">
+      <Link>Assets\backpackui</Link>
+    </EmbeddedResource>
     <Content Include="Libs\AugaAPI.dll" />
     <Content Include="ThunderStore_Release\manifest.json" />
     <Content Include="ThunderStore_Release\README.md" />
