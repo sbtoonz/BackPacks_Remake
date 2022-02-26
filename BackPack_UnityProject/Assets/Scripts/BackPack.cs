@@ -55,6 +55,22 @@ public class BackPack : Container
          Inventory inventory = m_inventory;
          inventory.m_onChanged = (Action)Delegate.Combine(inventory.m_onChanged, new Action(OnBackPackChange)); 
     }
+     
+     private new void DropAllItems()
+     {
+         if(bagdata == null) return;
+         if (!bagdata.HasInventory()) return;
+         List<ItemDrop.ItemData> allItems = bagdata!.GetBagInv()!.GetAllItems();
+         int num = 1;
+         foreach (ItemDrop.ItemData item in allItems)
+         {
+             Vector3 position = base.transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * 0.3f;
+             Quaternion rotation = Quaternion.Euler(0f, Random.Range(0, 360), 0f);
+             ItemDrop.DropItem(item, 0, position, rotation);
+             num++;
+         }
+         bagdata!.GetBagInv()!.RemoveAll();
+     }
 
      internal void ApplyConfigToInventory()
      {
@@ -115,14 +131,20 @@ public class BackPack : Container
     
     internal void DeRegisterRPC()
     {
-        if(m_nview == null) return;
-        if ((bool)m_nview && m_nview.IsOwner())
+        try
         {
+            if(m_nview == null) return;
+            if (!(bool)m_nview || !m_nview.IsOwner()) return;
             m_nview.Unregister("RequestBagOpen");
             m_nview.Unregister("OpenBagResponse");
             m_nview.Unregister("RequestBagTakeAll");
             m_nview.Unregister("TakeAllBagResponse");
         }
+        catch (Exception)
+        {
+            //ignored
+        }
+        
     }
 
     internal void StopCoroutines()
@@ -186,20 +208,6 @@ public class BackPack : Container
 #endif
     }
     
-    private new void DropAllItems()
-    {
-        if(bagdata == null) return;
-        List<ItemDrop.ItemData> allItems = bagdata!.GetBagInv()!.GetAllItems();
-        int num = 1;
-        foreach (ItemDrop.ItemData item in allItems)
-        {
-            Vector3 position = base.transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * 0.3f;
-            Quaternion rotation = Quaternion.Euler(0f, Random.Range(0, 360), 0f);
-            ItemDrop.DropItem(item, 0, position, rotation);
-            num++;
-        }
-        bagdata!.GetBagInv()!.RemoveAll();
-    }
     internal void OnDisable()
     {
         #if UNITY_COMPILEFLAG
@@ -223,15 +231,14 @@ public class BackPack : Container
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
-        if (!Player.m_localPlayer.IsOnGround()) return;
         if (Player.m_localPlayer.IsDead()) return;
         if (!InventoryGui.IsVisible()) return;
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(BackPacks.BackPacks.OpenInventoryKey!.Value))
         {
             try
             {
-                InventoryGui.instance.Show(this);
-                //m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                //InventoryGui.instance.Show(this);
+                m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
             }
             catch (Exception)
             {
@@ -241,21 +248,25 @@ public class BackPack : Container
         if (!InventoryGui.instance.isActiveAndEnabled) return;
         if (Auga.API.IsLoaded())
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             AugaBackPackTip = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip").gameObject;
         }
         else
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
                 .GetComponent<Text>();
         }
 
         if (Player.m_localPlayer.m_shoulderItem == null)
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             if(text)text!.gameObject.SetActive(false);
             return;
         }
         if (Auga.API.IsLoaded())
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
             if (!flag) return;
             if (!text) return;
@@ -265,6 +276,7 @@ public class BackPack : Container
         }
         else
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
             if (!flag) return;
             if (!text) return;
@@ -449,8 +461,6 @@ public class BackPack : Container
 		}
 		else
 		{
-			ZDOMan.instance.ForceSendZDO(uid, m_nview.GetZDO().m_uid);
-			m_nview.GetZDO().SetOwner(uid);
 			m_nview.InvokeRPC(uid, "OpenBagResponse", true);
 		}
 	}
@@ -501,8 +511,6 @@ public class BackPack : Container
         }
         if (granted)
         {
-            m_nview.ClaimOwnership();
-            ZDOMan.instance.ForceSendZDO(uid, m_nview.GetZDO().m_uid);
             Player.m_localPlayer.GetInventory().MoveAll(m_inventory);
             if (m_onTakeAllSuccess != null)
             {
@@ -513,16 +521,6 @@ public class BackPack : Container
         {
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_inuse");
         }
-    }
-    
-    public static string Base64Encode(string plainText) {
-        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-        return System.Convert.ToBase64String(plainTextBytes);
-    }
-    
-    public static string Base64Decode(string base64EncodedData) {
-        var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-        return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
     }
 #endif
 
@@ -580,13 +578,7 @@ public static class EIDFHelper
     {
         return itemData.Extended()?.GetComponent<BackPack.BackPackData>() != null;
     }
-
-    public static bool HasInventory(this ItemDrop.ItemData itemData, out Inventory? inventory)
-    {
-        inventory = itemData.GetBagInv();
-        return inventory != null;
-    }
-
+    
     public static BackPack.BagTier? BagTier(this ItemDrop.ItemData itemData, out BackPack.BagTier? bagTier)
     {
         bagTier =itemData.Extended()?.GetComponent<BackPack.BackPackData>().Tier;
@@ -611,6 +603,12 @@ public static class EIDFHelper
     {
         return itemData.Extended()?.GetComponent<BackPack.BackPackData>()?.ReturnInventory();
         
+    }
+
+    public static bool HasInventory(this ItemDrop.ItemData itemdata)
+    {
+        Inventory? inventory = itemdata.GetBagInv()!;
+        return inventory != null;
     }
 }
 #endif

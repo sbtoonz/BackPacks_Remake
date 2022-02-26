@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -19,7 +21,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.2.4";
+        internal const string ModVersion = "0.2.5";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         internal static ManualLogSource _logSource = new ManualLogSource(ModName);
@@ -61,6 +63,7 @@ namespace BackPacks
         internal static ConfigEntry<KeyCode>? OpenInventoryKey;
         internal static ConfigEntry<bool>? DropallOnUnEquip;
         internal static ConfigEntry<bool>? ShowToolTipText;
+        internal static bool defsidefileflag;
 
 
         internal static SE_Stats? CarryStat;
@@ -79,8 +82,13 @@ namespace BackPacks
             ExtendedItemData.LoadExtendedItemData += LoadEIDF;
             ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.DataID, typeof(BackPack.BackPackData));
             backpackUI = LoadAssetBundle("backpackui");
-            backpackAdmin = backpackUI.LoadAsset<GameObject>("BackPack_Admin");
+            backpackAdmin = backpackUI!.LoadAsset<GameObject>("BackPack_Admin");
+            Debug.LogError(backpackAdmin.name);
             backpackUI.Unload(false);
+            if (File.Exists(Paths.ConfigPath + Path.DirectorySeparatorChar + "defside"))
+            {
+                defsidefileflag = true;
+            }
         }
 
         private void LoadEIDF(ExtendedItemData itemdata)
@@ -89,6 +97,7 @@ namespace BackPacks
             {
                 if (FejdStartup.instance != null) return;
                 itemdata = itemdata.ExtendedClone();
+                if(!itemdata.HasInventory()) return;
                 var inv = itemdata.GetBagInv();
                 if(inv == null) return;
                 itemdata.m_shared.m_teleportable = inv!.IsTeleportable();
@@ -215,6 +224,10 @@ namespace BackPacks
 
             DropallOnUnEquip = config("General", "Drop all bag contents on unequip", false,
                 "If set to true the bag will drop all its items when coming off player shoulders");
+
+
+            ShowToolTipText = config("General", "Show tooltip for equip key", false,
+                "Set this to true to disable the inventory tooltip for opening bag");
             
             
             configSync.AddLockingConfigEntry(ServerConfigLocked);
@@ -246,7 +259,14 @@ namespace BackPacks
             IronBag.RequiredUpgradeItems.Add("LeatherScraps", 5);
             var id = IronBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierIron!.Value;
-
+            if (defsidefileflag)
+            {
+                var frostResistance = new HitData.DamageModPair() { m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Resistant};
+                id.m_itemData.m_shared.m_damageModifiers = new List<HitData.DamageModPair>
+                {
+                    frostResistance
+                };
+            }
             
         }
         private void SetupSilverBag()
@@ -276,6 +296,14 @@ namespace BackPacks
             SilverBag.RequiredUpgradeItems.Add("WolfPelt", 5);
             var id = SilverBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierSilver!.Value;
+            if (defsidefileflag)
+            {
+                var frostResistance = new HitData.DamageModPair() { m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Resistant};
+                id.m_itemData.m_shared.m_damageModifiers = new List<HitData.DamageModPair>
+                {
+                    frostResistance
+                };
+            }
         }
         private void SetupLeatherBag()
         {

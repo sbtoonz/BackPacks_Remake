@@ -89,7 +89,7 @@ namespace BackPacks
         }
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
-        [HarmonyPriority(Priority.VeryLow)]
+        [HarmonyPriority(Priority.High)]
         public static class EquipItemPatch
         {
 
@@ -294,12 +294,14 @@ namespace BackPacks
                     var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
                     icon.gameObject.SetActive(false);
                 }
+                
                 BackPacks.backpackAdmin = Object.Instantiate(BackPacks.backpackAdmin, InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
-                BackPacks.backpackAdmin.SetActive(false);
+                BackPacks.backpackAdmin!.SetActive(false);
                 var panel = BackPacks.backpackAdmin.GetComponent<BagAdminPanel>();
                 panel.m_Bkg.sprite = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject.GetComponent<Image>().sprite;
                 panel.m_Bkg.material = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject
                     .GetComponent<Image>().material;
+                    
                 
             }
         }

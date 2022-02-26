@@ -118,5 +118,8 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
   * Resolved issue where if another player interacts with a chest it no longer registers an error in log (no more red sea of text)
   * Resolved issue where if YOU upgraded or unequipped your bag other players lost access to their bags
   * Renamed RPC methods for bag, avoids issues if you try to open a container after equipping your bag in multiplayer
-  * Added RPC Method for admin to peek bag contents (needs testing before implementing into a tool)
-  **IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB**
+  * Added RPC Method for admin to peek bag contents (needs testing before implementing into a tool) 
+
+### V0.2.5
+* Fixed reported issue where if you were wearing cape and attempted to equip bag the game resulted in a null reference (red text)********
+  <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>

@@ -3,13 +3,14 @@ using UnityEngine.EventSystems;
 
 public class DragNDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+#pragma warning disable CS8618
     public Transform target;
     public bool shouldReturn;
     private bool isMouseDown;
     private Vector3 startMousePosition;
     private Vector3 startPosition;
     Vector3 distance;
-
+#pragma warning restore CS8618
     private static bool _donedrag;
 
     private void Start()
