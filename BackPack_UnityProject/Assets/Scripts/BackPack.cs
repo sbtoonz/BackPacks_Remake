@@ -26,17 +26,15 @@ public class BackPack : Container
     public BagTier tier = BagTier.UnKnown;
     public int fixedWidth = 0;
     public int fixedHeight = 0;
-    public ExtendedItemData bagdata;
+    public ExtendedItemData? bagdata;
 
 #if UNITY_COMPILEFLAG
     private bool IsActive => gameObject.activeInHierarchy;
     internal static BagTier StaticTier;
     private static Text? text;
     
-    private static BackPack? m_instance;
     internal static GameObject? AuguaTrashThing;
     internal static GameObject? AugaBackPackTip;
-    public static BackPack? instance => m_instance;
     public float Result { get; private set; }
     public void CloseBag() => InventoryGui.instance.CloseContainer();
 
@@ -57,6 +55,22 @@ public class BackPack : Container
          Inventory inventory = m_inventory;
          inventory.m_onChanged = (Action)Delegate.Combine(inventory.m_onChanged, new Action(OnBackPackChange)); 
     }
+     
+     private new void DropAllItems()
+     {
+         if(bagdata == null) return;
+         if (!bagdata.HasInventory()) return;
+         List<ItemDrop.ItemData> allItems = bagdata!.GetBagInv()!.GetAllItems();
+         int num = 1;
+         foreach (ItemDrop.ItemData item in allItems)
+         {
+             Vector3 position = base.transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * 0.3f;
+             Quaternion rotation = Quaternion.Euler(0f, Random.Range(0, 360), 0f);
+             ItemDrop.DropItem(item, 0, position, rotation);
+             num++;
+         }
+         bagdata!.GetBagInv()!.RemoveAll();
+     }
 
      internal void ApplyConfigToInventory()
      {
@@ -103,25 +117,34 @@ public class BackPack : Container
     
     internal void RegisterRPC()
     {
-        if ((bool)m_nview)
+        if ((bool)m_nview && m_nview.IsOwner())
         {
-            m_nview.Register<long>("RequestOpen", RPC_RequestOpen);
-            m_nview.Register<bool>("OpenRespons", RPC_OpenRespons);
-            m_nview.Register<long>("RequestTakeAll", RPC_RequestTakeAll);
-            m_nview.Register<bool>("TakeAllRespons", RPC_TakeAllRespons);
-            m_nview.Register<string>("AdminInspectReq", RPC_AdminPeekContentsReq);
-            m_nview.Register<string>("AdminInspectRespons", RPC_AdminPeekContentsResponse);
+            string checkstring = "RequestBagOpen";
+            int checkhash = checkstring.GetStableHashCode();
+            if (m_nview.m_functions.ContainsKey(checkhash)) return;
+            m_nview.Register<long>("RequestBagOpen", RPC_RequestOpenBag);
+            m_nview.Register<bool>("OpenBagResponse", RPC_OpenBagResponse);
+            m_nview.Register<long>("RequestBagTakeAll", RPC_RequestTakeAllFromBag);
+            m_nview.Register<bool>("TakeAllBagResponse", RPC_TakeBagAllResponse);
         }
     }
     
     internal void DeRegisterRPC()
     {
-        m_nview.Unregister("RequestOpen");
-        m_nview.Unregister("OpenRespons");
-        m_nview.Unregister("RequestTakeAll");
-        m_nview.Unregister("TakeAllRespons");
-        m_nview.Unregister("AdminInspectReq");
-        m_nview.Unregister("AdminInspectRespons"); 
+        try
+        {
+            if(m_nview == null) return;
+            if (!(bool)m_nview || !m_nview.IsOwner()) return;
+            m_nview.Unregister("RequestBagOpen");
+            m_nview.Unregister("OpenBagResponse");
+            m_nview.Unregister("RequestBagTakeAll");
+            m_nview.Unregister("TakeAllBagResponse");
+        }
+        catch (Exception)
+        {
+            //ignored
+        }
+        
     }
 
     internal void StopCoroutines()
@@ -155,7 +178,6 @@ public class BackPack : Container
 
     internal new void Awake()
     {
-        m_instance = this;
 #if UNITY_COMPILEFLAG
         if (Player.m_localPlayer == null)
         {
@@ -182,39 +204,22 @@ public class BackPack : Container
     internal void OnDestroy()
     {
 #if UNITY_COMPILEFLAG
-        if (m_instance == this)
-        {
-            m_instance = null;
-            bagdata = null;
-        }
+        bagdata = null;
 #endif
     }
     
-    private new void DropAllItems()
-    {
-        List<ItemDrop.ItemData> allItems = bagdata.GetBagInv().GetAllItems();
-        int num = 1;
-        foreach (ItemDrop.ItemData item in allItems)
-        {
-            Vector3 position = base.transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * 0.3f;
-            Quaternion rotation = Quaternion.Euler(0f, Random.Range(0, 360), 0f);
-            ItemDrop.DropItem(item, 0, position, rotation);
-            num++;
-        }
-        bagdata.GetBagInv().RemoveAll();
-    }
     internal void OnDisable()
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
-        if (BackPacks.BackPacks.dropallOnUnEquip.Value)
+        if (BackPacks.BackPacks.DropallOnUnEquip!.Value)
         {
             if (ZNetScene.instance == null) return;
             DropAllItems();
             var zPackage = new ZPackage();
-            bagdata.GetBagInv().Save(zPackage);
-            bagdata.GetComponent<BackPackData>().PackData = zPackage.GetBase64();
-            bagdata.Extended().m_shared.m_teleportable = bagdata.GetBagInv().IsTeleportable();
+            bagdata!.GetBagInv()!.Save(zPackage);
+            bagdata!.GetComponent<BackPackData>().PackData = zPackage.GetBase64();
+            bagdata.Extended().m_shared.m_teleportable = bagdata.GetBagInv()!.IsTeleportable();
             bagdata.Extended().Save();
         }
         DeRegisterRPC();
@@ -226,14 +231,14 @@ public class BackPack : Container
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
-        if (!Player.m_localPlayer.IsOnGround()) return;
         if (Player.m_localPlayer.IsDead()) return;
         if (!InventoryGui.IsVisible()) return;
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(BackPacks.BackPacks.OpenInventoryKey!.Value))
         {
             try
             {
-                Interact(Player.m_localPlayer, false, false);
+                //InventoryGui.instance.Show(this);
+                m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
             }
             catch (Exception)
             {
@@ -243,21 +248,25 @@ public class BackPack : Container
         if (!InventoryGui.instance.isActiveAndEnabled) return;
         if (Auga.API.IsLoaded())
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             AugaBackPackTip = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip").gameObject;
         }
         else
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             text = InventoryGui.instance.gameObject.transform.Find("root/Player/help_Text").gameObject
                 .GetComponent<Text>();
         }
 
         if (Player.m_localPlayer.m_shoulderItem == null)
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             if(text)text!.gameObject.SetActive(false);
             return;
         }
         if (Auga.API.IsLoaded())
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
             if (!flag) return;
             if (!text) return;
@@ -267,6 +276,7 @@ public class BackPack : Container
         }
         else
         {
+            if(BackPacks.BackPacks.ShowToolTipText?.Value == false) return;
             var flag = Player.m_localPlayer.m_shoulderItem.m_shared.m_name.Contains("ackpack");
             if (!flag) return;
             if (!text) return;
@@ -349,7 +359,7 @@ public class BackPack : Container
 
     #region BagContentsFunctions
 
-        private void OnBackPackChange()
+    private void OnBackPackChange()
     {
 #if UNITY_COMPILEFLAG
         if (m_nview == null) return;
@@ -431,22 +441,85 @@ public class BackPack : Container
     #region RPCs
 
 #if UNITY_COMPILEFLAG
-    private void RPC_AdminPeekContentsResponse(long uid, string s)
-    {
-        ZLog.Log("Admin " + uid + " Wants to inspect: " + base.gameObject.name + " im: " + ZDOMan.instance.GetMyID());
-        InventoryGui.instance.Show(this);
 
-    }
+    private void RPC_RequestOpenBag(long uid, long playerID)
+	{
+		ZLog.Log("Player " + uid + " wants to open " + base.gameObject.name + "   im: " + ZDOMan.instance.GetMyID());
+		if (!m_nview.IsOwner())
+		{
+			ZLog.Log("  but im not the owner");
+		}
+		else if ((IsInUse() || ((bool)m_wagon && m_wagon.InUse())) && uid != ZNet.instance.GetUID())
+		{
+			ZLog.Log("  in use");
+			m_nview.InvokeRPC(uid, "OpenBagResponse", false);
+		}
+		else if (!CheckAccess(playerID))
+		{
+			ZLog.Log("  not yours");
+			m_nview.InvokeRPC(uid, "OpenBagResponse", false);
+		}
+		else
+		{
+			m_nview.InvokeRPC(uid, "OpenBagResponse", true);
+		}
+	}
 
-    private void RPC_AdminPeekContentsReq(long uid, string playerName)
+	private void RPC_OpenBagResponse(long uid, bool granted)
+	{
+		if ((bool)Player.m_localPlayer)
+		{
+			if (granted)
+			{
+				InventoryGui.instance.Show(this);
+			}
+			else
+			{
+				Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_inuse");
+			}
+		}
+	}
+    
+	private void RPC_RequestTakeAllFromBag(long uid, long playerID)
+	{
+		ZLog.Log("Player " + uid + " wants to takeall from " + base.gameObject.name + "   im: " + ZDOMan.instance.GetMyID());
+		if (!m_nview.IsOwner())
+		{
+			ZLog.Log("  but im not the owner");
+		}
+		else if ((IsInUse() || ((bool)m_wagon && m_wagon.InUse())) && uid != ZNet.instance.GetUID())
+		{
+			ZLog.Log("  in use");
+			m_nview.InvokeRPC(uid, "TakeAllBagResponse", false);
+		}
+		else if (!CheckAccess(playerID))
+		{
+			ZLog.Log("  not yours");
+			m_nview.InvokeRPC(uid, "TakeAllBagResponse", false);
+		}
+		else if (!(Time.time - m_lastTakeAllTime < 2f))
+		{
+			m_lastTakeAllTime = Time.time;
+			m_nview.InvokeRPC(uid, "TakeAllBagResponse", true);
+		}
+	}
+    private void RPC_TakeBagAllResponse(long uid, bool granted)
     {
-        if(ZNet.instance.m_adminList.Contains(playerName))
+        if (!Player.m_localPlayer)
         {
-            m_nview.InvokeRPC(uid, "AdminInspectRespons", "");
+            return;
+        }
+        if (granted)
+        {
+            Player.m_localPlayer.GetInventory().MoveAll(m_inventory);
+            if (m_onTakeAllSuccess != null)
+            {
+                m_onTakeAllSuccess();
+            }
         }
         else
         {
-            Debug.Log("Non admin invoking inspect command");
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_inuse");
         }
     }
 #endif
@@ -505,13 +578,7 @@ public static class EIDFHelper
     {
         return itemData.Extended()?.GetComponent<BackPack.BackPackData>() != null;
     }
-
-    public static bool HasInventory(this ItemDrop.ItemData itemData, out Inventory? inventory)
-    {
-        inventory = itemData.GetBagInv();
-        return inventory != null;
-    }
-
+    
     public static BackPack.BagTier? BagTier(this ItemDrop.ItemData itemData, out BackPack.BagTier? bagTier)
     {
         bagTier =itemData.Extended()?.GetComponent<BackPack.BackPackData>().Tier;
@@ -536,6 +603,12 @@ public static class EIDFHelper
     {
         return itemData.Extended()?.GetComponent<BackPack.BackPackData>()?.ReturnInventory();
         
+    }
+
+    public static bool HasInventory(this ItemDrop.ItemData itemdata)
+    {
+        Inventory? inventory = itemdata.GetBagInv()!;
+        return inventory != null;
     }
 }
 #endif

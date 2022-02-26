@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using ExtendedItemDataFramework;
 using HarmonyLib;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = System.Diagnostics.Debug;
+using Object = UnityEngine.Object;
 
 namespace BackPacks
 {
-    public class Patches
+    public static class Patches
     {
 
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.DoCrafting))]
         public static class InventoryGui_DoCrafting_Patch
         {
+            [UsedImplicitly]
             public static bool Prefix(InventoryGui __instance, Player player, bool __runOriginal)
             {
                 if (!__runOriginal || __instance.m_craftRecipe == null)
@@ -46,13 +49,14 @@ namespace BackPacks
                     upgradeItem.m_durability = upgradeItem.GetMaxDurability();
                     if (upgradeItem.IsBackpack())
                     {
-                        if (BackPack.instance != null)
+                        var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
+                        if (bag != null)
                         {
-                            BackPack.instance.CloseBag();
-                            BackPack.instance.StopCoroutines();
-                            BackPack.instance.ApplyConfigToInventory();
-                            BackPack.instance.AssignContainerSize(upgradeItem.Extended().m_quality);
-                            BackPack.instance.StartCoroutines();
+                            bag.CloseBag();
+                            bag.StopCoroutines();
+                            bag.ApplyConfigToInventory();
+                            bag.AssignContainerSize(upgradeItem.Extended().m_quality);
+                            bag.StartCoroutines();
                         }
                     }
                     if (!player.NoCostCheat())
@@ -85,46 +89,53 @@ namespace BackPacks
         }
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
-        [HarmonyPriority(Priority.VeryLow)]
+        [HarmonyPriority(Priority.High)]
         public static class EquipItemPatch
         {
 
+            [UsedImplicitly]
             private static void Prefix(Humanoid __instance, ItemDrop.ItemData item, bool triggerEquipEffects = true)
             {
-                if (__instance != Player.m_localPlayer) return;
-                if (!item.IsBackpack()) return;
-                switch (item.m_shared.m_itemType)
+                try
                 {
-                    case ItemDrop.ItemData.ItemType.Shoulder:
-                       
-                            if(BackPack.instance != null)
+                    if (Player.m_localPlayer == null) return;
+                    if (__instance.m_nview.GetZDO().m_uid != Player.m_localPlayer.m_nview.GetZDO().m_uid) return;
+                    if (!item.IsBackpack()) return;
+                    switch (item.m_shared.m_itemType)
+                    {
+                        case ItemDrop.ItemData.ItemType.Shoulder: 
+                            if (__instance.IsPlayer() && __instance.IsDead())
                             {
-                                if (__instance.IsPlayer() && __instance.IsDead())
-                                {
-                                    return;
-                                }
+                                return;
+                            }
 
-                                if (__instance.IsTeleporting())
-                                {
-                                    return;
-                                }
-                                if (Player.m_localPlayer.m_shoulderItem == null) return;
-                                if (__instance.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
-                                if (BackPack.instance.m_inventory != item.GetBagInv())
-                                {
-                                    BackPack.instance.CloseBag();
-                                    BackPack.instance.DeRegisterRPC();
-                                    BackPack.instance.StopCoroutines();
-                                    BackPack.instance.ApplyConfigToInventory();
-                                    BackPack.instance.AssignInventory(item.GetBagInv()!);
-                                    BackPack.instance.LoadBagContents();
-                                    BackPack.instance.AssignContainerSize(item.Extended().m_quality);
-                                    BackPack.instance.StartCoroutines();
-                                    BackPack.instance.RegisterRPC();
-                                }
+                            if (__instance.IsTeleporting())
+                            {
+                                return;
+                            }
+                            if (Player.m_localPlayer.m_shoulderItem == null) return;
+                            if (Player.m_localPlayer.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
+                            if (Player.m_localPlayer.m_shoulderItem.Extended().GetBagInv() != item.GetBagInv())
+                            {
+                                var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
+                                bag.CloseBag();
+                                bag.DeRegisterRPC();
+                                bag.StopCoroutines();
+                                bag.ApplyConfigToInventory();
+                                bag.AssignInventory(item.GetBagInv()!);
+                                bag.LoadBagContents();
+                                bag.AssignContainerSize(item.Extended().m_quality);
+                                bag.StartCoroutines();
+                                bag.RegisterRPC();
                             }
                             break;
+                    }
                 }
+                catch (Exception)
+                {
+                    //ignored
+                }
+                
             }
         }
 
@@ -132,6 +143,7 @@ namespace BackPacks
         [HarmonyAfter("GoldenJude_JudesEquipment")]
         public static class JudeBagPatch
         {
+            [UsedImplicitly]
             public static void Postfix(ObjectDB __instance)
             {
                 if (__instance.m_StatusEffects.Count <= 0) return;
@@ -195,6 +207,7 @@ namespace BackPacks
         [HarmonyAfter("GoldenJude_JudesEquipment")]
         public static class JudeBagOtherPatch
         {
+            [UsedImplicitly]
             public static void Postfix(ObjectDB __instance)
             {
                 if (__instance.m_StatusEffects.Count <= 0) return;
@@ -259,26 +272,41 @@ namespace BackPacks
         [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
         public static class AssignAuga
         {
+            [UsedImplicitly]
             public static void Postfix(InventoryGui __instance)
             {
-                if (!Auga.API.IsLoaded()) return;
-                if (BackPack.AugaBackPackTip != null) return;
-                BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/TrashDivider").gameObject;
-                BackPack.AugaBackPackTip = InstantiatePrefab.Instantiate(BackPack.AuguaTrashThing,
-                    InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
-                BackPack.AugaBackPackTip.gameObject.name = "BackPackToolTip";
-                var localPosition = BackPack.AugaBackPackTip.transform.localPosition;
-                var ypos = localPosition.y;
-                ypos -= 25;
-                localPosition =
-                    new Vector3(localPosition.x, ypos, localPosition.z);
-                BackPack.AugaBackPackTip.transform.localPosition = localPosition;
-                BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform.Find("root/Player/BackPackToolTip/Content").gameObject;
-                var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
-                icon.gameObject.SetActive(false);
+                if (Auga.API.IsLoaded())
+                {
+                    if (BackPack.AugaBackPackTip != null) return;
+                    BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform
+                        .Find("root/Player/TrashDivider").gameObject;
+                    BackPack.AugaBackPackTip = InstantiatePrefab.Instantiate(BackPack.AuguaTrashThing,
+                        InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
+                    BackPack.AugaBackPackTip.gameObject.name = "BackPackToolTip";
+                    var localPosition = BackPack.AugaBackPackTip.transform.localPosition;
+                    var ypos = localPosition.y;
+                    ypos -= 25;
+                    localPosition =
+                        new Vector3(localPosition.x, ypos, localPosition.z);
+                    BackPack.AugaBackPackTip.transform.localPosition = localPosition;
+                    BackPack.AuguaTrashThing = InventoryGui.instance.gameObject.transform
+                        .Find("root/Player/BackPackToolTip/Content").gameObject;
+                    var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
+                    icon.gameObject.SetActive(false);
+                }
+                
+                BackPacks.backpackAdmin = Object.Instantiate(BackPacks.backpackAdmin, InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
+                BackPacks.backpackAdmin!.SetActive(false);
+                var panel = BackPacks.backpackAdmin.GetComponent<BagAdminPanel>();
+                panel.m_Bkg.sprite = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject.GetComponent<Image>().sprite;
+                panel.m_Bkg.material = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject
+                    .GetComponent<Image>().material;
+                    
+                
             }
         }
 
+        
 
         internal static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {
