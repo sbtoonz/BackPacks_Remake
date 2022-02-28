@@ -308,6 +308,17 @@ namespace BackPacks
 
         
 
+        [HarmonyPatch(typeof(ZInput), nameof(ZInput.Reset))]
+        public static class ZinputPatch
+        {
+            public static void Postfix(ZInput __instance)
+            {
+                __instance.AddButton("Backpack",
+                    BackPacks.OpenInventoryKey!.Value, 0, 0, true, false);
+            }
+        }
+        
+
         internal static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {
 	        var playerInventory = player.GetInventory();

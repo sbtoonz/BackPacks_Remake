@@ -172,6 +172,8 @@ public class BackPack : Container
         StartCoroutine(AddInvWeightToItemWeight(0f));  
     }
 
+    
+
     #endregion
 
     #region  UnityEvents
@@ -233,12 +235,12 @@ public class BackPack : Container
         if(Player.m_localPlayer == null) return;
         if (Player.m_localPlayer.IsDead()) return;
         if (!InventoryGui.IsVisible()) return;
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(BackPacks.BackPacks.OpenInventoryKey!.Value))
-        {
+        if (ZInput.GetButton("Backpack") && ZInput.GetButton("AltPlace"))
+        { 
             try
             {
                 //InventoryGui.instance.Show(this);
-                m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
             }
             catch (Exception)
             {
