@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_COMPILEFLAG
+using BackPacks;
 using ExtendedItemDataFramework;
 using UnityEngine.UI;
 #endif
@@ -273,8 +274,9 @@ public class BackPack : Container
             if (!flag) return;
             if (!text) return;
             AugaBackPackTip!.SetActive(true);
+            
             text!.text =
-                $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
+                $"[<color=yellow>{ZInput.instance.GetButtonDef("AltPlace").m_key.ToString()} & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
         }
         else
         {
@@ -290,7 +292,7 @@ public class BackPack : Container
                 .GetComponent<Text>()
                 .font;
             text.text =
-                $"[<color=yellow>Left Shift & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
+                $"[<color=yellow>{ZInput.instance.GetButtonDef("AltPlace").m_key.ToString()} & {BackPacks.BackPacks.OpenInventoryKey!.Value.ToString()}</color>] Opens BackPack Inventory";
         }
 #endif
     }
