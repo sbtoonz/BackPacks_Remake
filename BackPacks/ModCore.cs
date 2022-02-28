@@ -65,6 +65,9 @@ namespace BackPacks
         internal static ConfigEntry<bool>? ShowToolTipText;
         internal static bool defsidefileflag;
 
+        internal static ZInput.ButtonDef? openBinding;
+        
+
 
         internal static SE_Stats? CarryStat;
         public void Awake()
@@ -83,7 +86,6 @@ namespace BackPacks
             ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.DataID, typeof(BackPack.BackPackData));
             backpackUI = LoadAssetBundle("backpackui");
             backpackAdmin = backpackUI!.LoadAsset<GameObject>("BackPack_Admin");
-            Debug.LogError(backpackAdmin.name);
             backpackUI.Unload(false);
             if (File.Exists(Paths.ConfigPath + Path.DirectorySeparatorChar + "defside"))
             {
