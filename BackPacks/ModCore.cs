@@ -63,10 +63,8 @@ namespace BackPacks
         internal static ConfigEntry<KeyCode>? OpenInventoryKey;
         internal static ConfigEntry<bool>? DropallOnUnEquip;
         internal static ConfigEntry<bool>? ShowToolTipText;
-        internal static bool defsidefileflag;
+        private static bool _defsidefileflag;
 
-        internal static ZInput.ButtonDef? openBinding;
-        
 
 
         internal static SE_Stats? CarryStat;
@@ -78,6 +76,10 @@ namespace BackPacks
             harmony.PatchAll(assembly);
             LoadConfigs();
             CarryStat = ScriptableObject.CreateInstance<SeCarryWeight>();
+            if (File.Exists(Paths.ConfigPath + Path.DirectorySeparatorChar + "defside"))
+            {
+                _defsidefileflag = true;
+            }
             SetupIronBag();
             SetupSilverBag();
             SetupLeatherBag();
@@ -87,10 +89,6 @@ namespace BackPacks
             backpackUI = LoadAssetBundle("backpackui");
             backpackAdmin = backpackUI!.LoadAsset<GameObject>("BackPack_Admin");
             backpackUI.Unload(false);
-            if (File.Exists(Paths.ConfigPath + Path.DirectorySeparatorChar + "defside"))
-            {
-                defsidefileflag = true;
-            }
         }
 
         private void LoadEIDF(ExtendedItemData itemdata)
@@ -261,13 +259,14 @@ namespace BackPacks
             IronBag.RequiredUpgradeItems.Add("LeatherScraps", 5);
             var id = IronBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierIron!.Value;
-            if (defsidefileflag)
+            if (_defsidefileflag)
             {
                 var frostResistance = new HitData.DamageModPair() { m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Resistant};
-                id.m_itemData.m_shared.m_damageModifiers = new List<HitData.DamageModPair>
+                List<HitData.DamageModPair> damageModPairs = new List<HitData.DamageModPair>
                 {
                     frostResistance
                 };
+                id.m_itemData.m_shared.m_damageModifiers = damageModPairs;
             }
             
         }
@@ -298,13 +297,14 @@ namespace BackPacks
             SilverBag.RequiredUpgradeItems.Add("WolfPelt", 5);
             var id = SilverBag.Prefab.gameObject.GetComponent<ItemDrop>();
             if (HaveMoveModifier!.Value) id.m_itemData.m_shared.m_movementModifier = _moveModifierSilver!.Value;
-            if (defsidefileflag)
+            if (_defsidefileflag)
             {
                 var frostResistance = new HitData.DamageModPair() { m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Resistant};
-                id.m_itemData.m_shared.m_damageModifiers = new List<HitData.DamageModPair>
+                List<HitData.DamageModPair> damageModPairs = new List<HitData.DamageModPair>
                 {
                     frostResistance
                 };
+                id.m_itemData.m_shared.m_damageModifiers = damageModPairs;
             }
         }
         private void SetupLeatherBag()
