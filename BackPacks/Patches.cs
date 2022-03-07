@@ -373,65 +373,72 @@ namespace BackPacks
 	{
 		public static void Postfix(Player __instance, Piece piece, Player.RequirementMode mode, ref bool __result)
 		{
-			if ((bool)piece.m_craftingStation)
+			if(!__result)
 			{
-				if (mode == Player.RequirementMode.IsKnown || mode == Player.RequirementMode.CanAlmostBuild)
+				if ((bool)piece.m_craftingStation)
 				{
-					if (!__instance.m_knownStations.ContainsKey(piece.m_craftingStation.m_name))
+					if (mode == Player.RequirementMode.IsKnown || mode == Player.RequirementMode.CanAlmostBuild)
 					{
-						__result = false;
+						if (!__instance.m_knownStations.ContainsKey(piece.m_craftingStation.m_name))
+						{
+							return;
+						}
+					}
+					else if (!CraftingStation.HaveBuildStationInRange(piece.m_craftingStation.m_name, __instance.transform.position))
+					{
+						return;
 					}
 				}
-				else if (!CraftingStation.HaveBuildStationInRange(piece.m_craftingStation.m_name, __instance.transform.position))
+				if (piece.m_dlc.Length > 0 && !DLCMan.instance.IsDLCInstalled(piece.m_dlc))
 				{
-					__result = false;
+					return;
+				}
+				Piece.Requirement[] resources = piece.m_resources;
+				Piece.Requirement[] array = resources;
+				bool hasItem = false;
+				foreach (Piece.Requirement requirement in array)
+				{
+					if (requirement.m_resItem && requirement.m_amount > 0)
+					{
+						if (mode == Player.RequirementMode.IsKnown)
+						{
+							if (!__instance.m_knownMaterial.Contains(requirement.m_resItem.m_itemData.m_shared.m_name))
+							{
+								return;
+							}
+						}
+
+						if (!((Humanoid)Player.m_localPlayer).m_shoulderItem.IsBackpack())
+						{
+							break;
+						}
+						else if (mode == Player.RequirementMode.CanAlmostBuild)
+						{
+							if (!__instance.GetInventory().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
+							{
+								
+								if (Player.m_localPlayer.m_shoulderItem.GetBagInv().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
+								{
+									hasItem = true;
+									break;
+								}
+							}
+							if(!hasItem)
+								return;
+						}
+						else if (mode == Player.RequirementMode.CanBuild && __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) < requirement.m_amount)
+						{
+							int hasItems = __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
+							hasItems += __instance.m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
+							if (hasItems < requirement.m_amount)
+							{
+								return;
+							}
+						}
+					}
 				}
 			}
-			if (piece.m_dlc.Length > 0 && !DLCMan.instance.IsDLCInstalled(piece.m_dlc))
-			{
-				__result = false;
-			}
-			Piece.Requirement[] resources = piece.m_resources;
-			Piece.Requirement[] array = resources;
-			foreach (Piece.Requirement requirement in array)
-			{
-				if (!requirement.m_resItem || requirement.m_amount <= 0)
-				{
-					continue;
-				}
-				if (!((Humanoid)Player.m_localPlayer).m_shoulderItem.IsBackpack())
-				{
-					break;
-				}
-				switch (mode)
-				{
-				case Player.RequirementMode.IsKnown:
-					if (!__instance.m_knownMaterial.Contains(requirement.m_resItem.m_itemData.m_shared.m_name))
-					{
-						__result = false;
-					}
-					break;
-				case Player.RequirementMode.CanAlmostBuild:
-					if (!((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
-					{
-						__result = false;
-					}
-					break;
-				case Player.RequirementMode.CanBuild:
-					if (((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) < requirement.m_amount)
-					{
-						__result = false;
-					}
-					if (((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) > requirement.m_amount)
-					{
-						__result = true;
-					}
-					break;
-				default:
-					__result = false;
-					break;
-				}
-			}
+			__result = true;
 		}
 	}
 
