@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -295,12 +296,13 @@ namespace BackPacks
                     icon.gameObject.SetActive(false);
                 }
                 
+                /*
                 BackPacks.backpackAdmin = Object.Instantiate(BackPacks.backpackAdmin, InventoryGui.instance.gameObject.transform.Find("root/Player/").transform);
                 BackPacks.backpackAdmin!.SetActive(false);
                 var panel = BackPacks.backpackAdmin.GetComponent<BagAdminPanel>();
                 panel.m_Bkg.sprite = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject.GetComponent<Image>().sprite;
                 panel.m_Bkg.material = __instance.gameObject.transform.Find("root/Player/Bkg").gameObject
-                    .GetComponent<Image>().material;
+                    .GetComponent<Image>().material;*/
                     
                 
             }
@@ -318,7 +320,193 @@ namespace BackPacks
             }
         }
         
+        [HarmonyPatch]  
+		public static class Player_HaveRequirements_Patch
+		{
+			[UsedImplicitly]
+			public static MethodBase TargetMethod()
+			{
+				return AccessTools.DeclaredMethod(typeof(Player), "HaveRequirements", new Type[3]
+				{
+					typeof(Piece.Requirement[]),
+					typeof(bool),
+					typeof(int)
+				}, (Type[])null);
+		}
 
+		[UsedImplicitly]
+		[HarmonyPostfix]
+		public static void Postfix(Player __instance, ref bool __result, Piece.Requirement[] resources, int qualityLevel)
+		{
+			if (Player.m_localPlayer == null || ((Humanoid)Player.m_localPlayer).m_shoulderItem == null || !((Humanoid)Player.m_localPlayer).m_shoulderItem.IsBackpack())
+			{
+				return;
+			}
+			Inventory bagInv = ((Humanoid)__instance).m_shoulderItem.GetBagInv();
+			if (__result || bagInv == null)
+			{
+				return;
+			}
+			foreach (Piece.Requirement requirement in resources)
+			{
+				if (requirement.m_resItem != null)
+				{
+					string name = requirement.m_resItem.m_itemData.m_shared.m_name;
+					int amount = requirement.GetAmount(qualityLevel);
+					int num = ((Humanoid)__instance).m_inventory.CountItems(name) + bagInv.CountItems(name);
+					if (num < amount)
+					{
+						return;
+					}
+				}
+			}
+			__result = true;
+		}
+	}
+
+	[HarmonyPatch(typeof(Player), "HaveRequirements", new Type[]
+	{
+		typeof(Piece),
+		typeof(Player.RequirementMode)
+	})]
+	public static class CraftFromBagPiecePatch
+	{
+		public static void Postfix(Player __instance, Piece piece, Player.RequirementMode mode, ref bool __result)
+		{
+			if ((bool)piece.m_craftingStation)
+			{
+				if (mode == Player.RequirementMode.IsKnown || mode == Player.RequirementMode.CanAlmostBuild)
+				{
+					if (!__instance.m_knownStations.ContainsKey(piece.m_craftingStation.m_name))
+					{
+						__result = false;
+					}
+				}
+				else if (!CraftingStation.HaveBuildStationInRange(piece.m_craftingStation.m_name, __instance.transform.position))
+				{
+					__result = false;
+				}
+			}
+			if (piece.m_dlc.Length > 0 && !DLCMan.instance.IsDLCInstalled(piece.m_dlc))
+			{
+				__result = false;
+			}
+			Piece.Requirement[] resources = piece.m_resources;
+			Piece.Requirement[] array = resources;
+			foreach (Piece.Requirement requirement in array)
+			{
+				if (!requirement.m_resItem || requirement.m_amount <= 0)
+				{
+					continue;
+				}
+				if (!((Humanoid)Player.m_localPlayer).m_shoulderItem.IsBackpack())
+				{
+					break;
+				}
+				switch (mode)
+				{
+				case Player.RequirementMode.IsKnown:
+					if (!__instance.m_knownMaterial.Contains(requirement.m_resItem.m_itemData.m_shared.m_name))
+					{
+						__result = false;
+					}
+					break;
+				case Player.RequirementMode.CanAlmostBuild:
+					if (!((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
+					{
+						__result = false;
+					}
+					break;
+				case Player.RequirementMode.CanBuild:
+					if (((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) < requirement.m_amount)
+					{
+						__result = false;
+					}
+					if (((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) > requirement.m_amount)
+					{
+						__result = true;
+					}
+					break;
+				default:
+					__result = false;
+					break;
+				}
+			}
+		}
+	}
+
+	[HarmonyPatch(typeof(Inventory), "RemoveItem", new Type[] { typeof(ItemDrop.ItemData) })]
+	public static class Inventory_RemoveItem_Patch
+	{
+		public static void Postfix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
+		{
+			if (!__result && __instance == ((Humanoid)Player.m_localPlayer)?.m_inventory)
+			{
+				Inventory bagInv = ((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv();
+				if (bagInv != null)
+				{
+					__result = bagInv.RemoveItem(item);
+				}
+			}
+		}
+	}
+
+	[HarmonyPatch(typeof(Player), "ConsumeResources")]
+	public static class Player_ConsumeResources_Patch
+	{
+		public static bool Prefix(Player __instance, Piece.Requirement[] requirements, int qualityLevel)
+		{
+			if (__instance == null)
+			{
+				return true;
+			}
+			Inventory bagInv = ((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv();
+			if (bagInv == null)
+			{
+				return true;
+			}
+			foreach (Piece.Requirement requirement in requirements)
+			{
+				if (!(requirement.m_resItem != null))
+				{
+					continue;
+				}
+				string name = requirement.m_resItem.m_itemData.m_shared.m_name;
+				int amount = requirement.GetAmount(qualityLevel);
+				if (amount > 0)
+				{
+					int num = ((Humanoid)__instance).m_inventory.CountItems(name);
+					int num2 = ((num < amount) ? (amount - num) : 0);
+					if (num2 > 0)
+					{
+						bagInv.RemoveItem(name, num2);
+					}
+				}
+			}
+			return true;
+		}
+	}
+
+	[HarmonyPriority(200)]
+	[HarmonyPatch(typeof(InventoryGui), "SetupRequirement")]
+	public static class InventoryGui_SetupRequirement_Patch
+	{
+		public static void Postfix(Transform elementRoot, Piece.Requirement req, Player player, int quality)
+		{
+			Text component = elementRoot.transform.Find("res_amount").GetComponent<Text>();
+			if (req.m_resItem != null)
+			{
+				if (!player.HaveRequirements(new Piece.Requirement[1] { req }, false, quality))
+				{
+					component.color = (((double)Mathf.Sin(Time.time * 10f) > 0.0) ? Color.red : Color.white);
+				}
+				else
+				{
+					component.color = Color.white;
+				}
+			}
+		}
+	}
         internal static void EjectBackpack(ItemDrop.ItemData item, Player player, Inventory backpackInventory)
         {
 	        var playerInventory = player.GetInventory();

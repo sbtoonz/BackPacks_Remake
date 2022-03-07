@@ -122,4 +122,13 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 
 ### V0.2.5
 * Fixed reported issue where if you were wearing cape and attempted to equip bag the game resulted in a null reference (red text)********
-  <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>
+  
+### V0.2.6
+* Added craft from bag being worn option. When you have things in your bag and are wearing it you can craft from that bags contents with no hassle now
+
+
+### V0.2.7 
+* Fixed issue on logout/login killing inventoryGUI
+
+
+<p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>

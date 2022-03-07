@@ -21,7 +21,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.2.5";
+        internal const string ModVersion = "0.2.7";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         internal static ManualLogSource _logSource = new ManualLogSource(ModName);
@@ -93,6 +93,7 @@ namespace BackPacks
 
         private void LoadEIDF(ExtendedItemData itemdata)
         {
+            if(itemdata == null) return;
             if (itemdata.IsBackpack())
             {
                 if (FejdStartup.instance != null) return;

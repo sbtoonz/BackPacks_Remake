@@ -27,9 +27,10 @@ public class BackPack : Container
     public BagTier tier = BagTier.UnKnown;
     public int fixedWidth = 0;
     public int fixedHeight = 0;
-    public ExtendedItemData? bagdata;
+
 
 #if UNITY_COMPILEFLAG
+    public ExtendedItemData? bagdata;
     private bool IsActive => gameObject.activeInHierarchy;
     internal static BagTier StaticTier;
     private static Text? text;
@@ -44,7 +45,7 @@ public class BackPack : Container
 
 
     #region HelperMethods
-
+#if UNITY_COMPILEFLAG
      internal void SetupInventory()
      { 
          if (Player.m_localPlayer.IsDead()) return;
@@ -75,7 +76,7 @@ public class BackPack : Container
 
      internal void ApplyConfigToInventory()
      {
-#if UNITY_COMPILEFLAG
+
          switch (tier)
          {
              case BagTier.Leather:
@@ -97,7 +98,7 @@ public class BackPack : Container
                  fixedWidth = Mathf.CeilToInt(BackPacks.BackPacks.UnknownBagSize.Value.x);
                  break;
          }
-#endif
+
      }
     internal void AssignInventory(Inventory inv)
     {
@@ -173,7 +174,7 @@ public class BackPack : Container
         StartCoroutine(AddInvWeightToItemWeight(0f));  
     }
 
-    
+#endif
 
     #endregion
 
