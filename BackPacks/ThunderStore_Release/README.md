@@ -126,9 +126,14 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 ### V0.2.6
 * Added craft from bag being worn option. When you have things in your bag and are wearing it you can craft from that bags contents with no hassle now
 
-
 ### V0.2.7 
 * Fixed issue on logout/login killing inventoryGUI
+
+### V0.2.8 
+* Minor fixup 
+
+### V0.2.9
+* Fixed not being able to craft from hammer due to bag
 
 
 <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>
