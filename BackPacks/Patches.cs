@@ -400,45 +400,39 @@ namespace BackPacks
 				{
 					if (requirement.m_resItem && requirement.m_amount > 0)
 					{
-						if (mode == Player.RequirementMode.IsKnown)
-						{
-							if (!__instance.m_knownMaterial.Contains(requirement.m_resItem.m_itemData.m_shared.m_name))
-							{
-								return;
-							}
-						}
 
-						if (!((Humanoid)Player.m_localPlayer).m_shoulderItem.IsBackpack())
+						switch (mode)
 						{
-							break;
-						}
-						else if (mode == Player.RequirementMode.CanAlmostBuild)
-						{
-							if (!__instance.GetInventory().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
+							case Player.RequirementMode.IsKnown when !__instance.m_knownMaterial.Contains(requirement.m_resItem.m_itemData.m_shared.m_name):
+								return;
+							case Player.RequirementMode.CanAlmostBuild:
 							{
-								
-								if (Player.m_localPlayer.m_shoulderItem.GetBagInv().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
+								if (!__instance.GetInventory().HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
 								{
-									hasItem = true;
-									break;
+									if (!__instance.m_shoulderItem.IsBackpack()) return;
+									if (!__instance.m_shoulderItem.GetBagInv()!.HaveItem(requirement.m_resItem.m_itemData.m_shared.m_name))
+									{
+										return;
+									}
 								}
+								break;
 							}
-							if(!hasItem)
-								return;
-						}
-						else if (mode == Player.RequirementMode.CanBuild && __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) < requirement.m_amount)
-						{
-							int hasItems = __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
-							hasItems += __instance.m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
-							if (hasItems < requirement.m_amount)
+							case Player.RequirementMode.CanBuild when __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) < requirement.m_amount:
 							{
-								return;
+								int hasItems = __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
+								hasItems += __instance.m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
+								if (hasItems > requirement.m_amount)
+									hasItem = true;
+								if (!hasItem)
+									return;
+								break;
 							}
 						}
 					}
 				}
+				__result = hasItem;
 			}
-			__result = true;
+			
 		}
 	}
 

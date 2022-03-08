@@ -135,5 +135,8 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 ### V0.2.9
 * Fixed not being able to craft from hammer due to bag
 
+### V0.3.0
+* Fixed Discord report of free craft from hammer
+
 
 <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>
