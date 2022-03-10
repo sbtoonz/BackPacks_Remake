@@ -80,7 +80,7 @@ namespace BackPacks
 
                     ++Game.instance.GetPlayerProfile().m_playerStats.m_crafts;
                     Gogan.LogEvent("Game", "Crafted", __instance.m_craftRecipe.m_item.m_itemData.m_shared.m_name,
-                        (long)newQuality);
+                        newQuality);
 
                     return false;
                 }
@@ -331,18 +331,18 @@ namespace BackPacks
 					typeof(Piece.Requirement[]),
 					typeof(bool),
 					typeof(int)
-				}, (Type[])null);
+				}, null!);
 		}
 
 		[UsedImplicitly]
 		[HarmonyPostfix]
 		public static void Postfix(Player __instance, ref bool __result, Piece.Requirement[] resources, int qualityLevel)
 		{
-			if (Player.m_localPlayer == null || ((Humanoid)Player.m_localPlayer).m_shoulderItem == null || !((Humanoid)Player.m_localPlayer).m_shoulderItem.IsBackpack())
+			if (Player.m_localPlayer == null || Player.m_localPlayer.m_shoulderItem == null || !Player.m_localPlayer.m_shoulderItem.IsBackpack())
 			{
 				return;
 			}
-			Inventory bagInv = ((Humanoid)__instance).m_shoulderItem.GetBagInv();
+			Inventory bagInv = __instance.m_shoulderItem.GetBagInv()!;
 			if (__result || bagInv == null)
 			{
 				return;
@@ -353,7 +353,7 @@ namespace BackPacks
 				{
 					string name = requirement.m_resItem.m_itemData.m_shared.m_name;
 					int amount = requirement.GetAmount(qualityLevel);
-					int num = ((Humanoid)__instance).m_inventory.CountItems(name) + bagInv.CountItems(name);
+					int num = __instance.m_inventory.CountItems(name) + bagInv.CountItems(name);
 					if (num < amount)
 					{
 						return;
@@ -375,6 +375,8 @@ namespace BackPacks
 		{
 			if(!__result)
 			{
+				if(__instance.m_shoulderItem == null) return;
+				if(!__instance.m_shoulderItem.IsBackpack()) return;
 				if ((bool)piece.m_craftingStation)
 				{
 					if (mode == Player.RequirementMode.IsKnown || mode == Player.RequirementMode.CanAlmostBuild)
@@ -420,7 +422,7 @@ namespace BackPacks
 							case Player.RequirementMode.CanBuild when __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name) < requirement.m_amount:
 							{
 								int hasItems = __instance.GetInventory().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
-								hasItems += __instance.m_shoulderItem.GetBagInv().CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
+								hasItems += __instance.m_shoulderItem.GetBagInv()!.CountItems(requirement.m_resItem.m_itemData.m_shared.m_name);
 								if (hasItems > requirement.m_amount)
 									hasItem = true;
 								if (!hasItem)
@@ -441,9 +443,9 @@ namespace BackPacks
 	{
 		public static void Postfix(Inventory __instance, ref bool __result, ItemDrop.ItemData item)
 		{
-			if (!__result && __instance == ((Humanoid)Player.m_localPlayer)?.m_inventory)
+			if (!__result && __instance == Player.m_localPlayer?.m_inventory)
 			{
-				Inventory bagInv = ((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv();
+				Inventory bagInv = Player.m_localPlayer.m_shoulderItem.GetBagInv()!;
 				if (bagInv != null)
 				{
 					__result = bagInv.RemoveItem(item);
@@ -461,7 +463,7 @@ namespace BackPacks
 			{
 				return true;
 			}
-			Inventory bagInv = ((Humanoid)Player.m_localPlayer).m_shoulderItem.GetBagInv();
+			Inventory bagInv = Player.m_localPlayer.m_shoulderItem.GetBagInv()!;
 			if (bagInv == null)
 			{
 				return true;
@@ -476,7 +478,7 @@ namespace BackPacks
 				int amount = requirement.GetAmount(qualityLevel);
 				if (amount > 0)
 				{
-					int num = ((Humanoid)__instance).m_inventory.CountItems(name);
+					int num = __instance.m_inventory.CountItems(name);
 					int num2 = ((num < amount) ? (amount - num) : 0);
 					if (num2 > 0)
 					{
@@ -499,7 +501,7 @@ namespace BackPacks
 			{
 				if (!player.HaveRequirements(new Piece.Requirement[1] { req }, false, quality))
 				{
-					component.color = (((double)Mathf.Sin(Time.time * 10f) > 0.0) ? Color.red : Color.white);
+					component.color = ((Mathf.Sin(Time.time * 10f) > 0.0) ? Color.red : Color.white);
 				}
 				else
 				{

@@ -187,8 +187,8 @@ public class BackPack : Container
         {
             return;
         }
-        bagdata = Player.m_localPlayer.m_shoulderItem.Extended();
         if (Player.m_localPlayer != null) m_nview = Player.m_localPlayer.m_nview;
+        bagdata = Player.m_localPlayer!.m_shoulderItem.Extended();
         ApplyConfigToInventory();
         SetupInventory();
         RegisterRPC();
@@ -241,8 +241,8 @@ public class BackPack : Container
         { 
             try
             {
-                //InventoryGui.instance.Show(this);
-                Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                InventoryGui.instance.Show(this);
+                //Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
             }
             catch (Exception)
             {

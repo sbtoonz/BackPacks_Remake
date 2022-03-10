@@ -21,7 +21,7 @@ namespace BackPacks
     public class BackPacks : BaseUnityPlugin
     {
         internal const string ModName = "BackPacks_Remake";
-        internal const string ModVersion = "0.3.1";
+        internal const string ModVersion = "0.3.2";
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         internal static ManualLogSource _logSource = new ManualLogSource(ModName);
@@ -198,7 +198,7 @@ namespace BackPacks
                 "Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed");
 
             MoveModifierUnKnown = config("Move Modifiers", "UnKnown Tier Modifeir", 0.00f,
-                "Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed");
+                new ConfigDescription("Set this to a negative number to slow movement when wearing. Set to positive to increase movement when wearing. IE -0.15 would be a negative 15% movment speed", null, new ConfigurationManagerAttributes{IsAdvanced = true}));
 
             #endregion
 

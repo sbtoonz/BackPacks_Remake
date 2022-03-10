@@ -138,5 +138,11 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 ### V0.3.0
 * Fixed Discord report of free craft from hammer
 
+## V0.3.11
+* Fixed issue where not wearing bag caused red text while using hammer
+
+## V0.3.2
+* Update ServerSync
+
 
 <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>

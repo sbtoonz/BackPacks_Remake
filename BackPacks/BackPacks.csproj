@@ -9,9 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BackPacks</RootNamespace>
     <AssemblyName>BackPacks</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>9</LangVersion>
+    <LangVersion>10</LangVersion>
 	<Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -78,9 +78,6 @@
     </Reference>
     <Reference Include="ItemManager, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>Libs\ItemManager.dll</HintPath>
-    </Reference>
-    <Reference Include="ServerSync, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>Libs\ServerSync.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -277,6 +274,7 @@
     <Compile Include="..\BackPack_UnityProject\Assets\Scripts\BackPack.cs">
       <Link>MonoScripts\BackPack.cs</Link>
     </Compile>
+    <Compile Include="ConfigurationManagerAttributes.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="MonoScripts\BagAdminPanel.cs" />
     <Compile Include="MonoScripts\BagElement.cs" />
@@ -306,6 +304,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ThunderStore_Release\plugins" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ServerSync\ServerSync.csproj">
+      <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
+      <Name>ServerSync</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
