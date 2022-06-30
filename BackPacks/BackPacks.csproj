@@ -285,9 +285,6 @@
     <Compile Include="SECarryWeight.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="D:\AdminToolZ\Assets\AssetBundles\backpackui">
-      <Link>Assets\backpackui</Link>
-    </EmbeddedResource>
     <Content Include="Libs\AugaAPI.dll" />
     <Content Include="ThunderStore_Release\manifest.json" />
     <Content Include="ThunderStore_Release\README.md" />
@@ -306,7 +303,7 @@
     <Folder Include="ThunderStore_Release\plugins" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ServerSync\ServerSync.csproj">
+    <ProjectReference Include="..\ServerSync\ServerSync.csproj">
       <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
       <Name>ServerSync</Name>
     </ProjectReference>

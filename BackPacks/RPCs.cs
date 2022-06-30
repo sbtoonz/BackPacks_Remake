@@ -52,10 +52,10 @@ namespace BackPacks
         {
             Inventory TempInventory = new Inventory("test", null, 8, 10);
             TempInventory.Load(package);
-            BackPacks.backpackAdmin!.SetActive(true);
-            BackPacks.backpackAdmin.GetComponent<BagAdminPanel>().PopulateList();
-            var interfacepanel = BackPacks.backpackAdmin.GetComponent<BagAdminPanel>();
-            foreach (Transform transform in interfacepanel.elementroot)
+            //BackPacks.backpackAdmin!.SetActive(true);
+            //BackPacks.backpackAdmin.GetComponent<BagAdminPanel>().PopulateList();
+            //var interfacepanel = BackPacks.backpackAdmin.GetComponent<BagAdminPanel>();
+            /*foreach (Transform transform in interfacepanel.elementroot)
             {
                 Destroy(transform.gameObject);
             }
@@ -78,10 +78,10 @@ namespace BackPacks
                 element.m_itemData = VARIABLE;
                 button.onClick.AddListener(new UnityAction(delegate
                 {
-                    Debug.Log(element.m_ItemName);
-                    Debug.Log(element.m_itemData.m_shared.m_description);
+                    _logSource.Log(element.m_ItemName);
+                    _logSource.Log(element.m_itemData.m_shared.m_description);
                 }));
-            }
+            }*/
         }
         
         private static void GatherListOfBags(long senderUID, ZPackage zPackage, long adminUID, long ownerUID)

@@ -25,12 +25,6 @@ namespace BackPacks
         private const string ModGUID = "com.zarboz.backpacks";
         private static Harmony harmony = null!;
         internal static ManualLogSource _logSource = new ManualLogSource(ModName);
-        
-#pragma warning disable CS0649
-        internal static AssetBundle? EviesBackPacks;
-        internal static AssetBundle? backpackUI;
-        internal static GameObject? backpackAdmin;
-#pragma warning restore CS0649
 
         internal static Item? IronBag;
         internal static Item? SilverBag;
@@ -86,9 +80,6 @@ namespace BackPacks
             ExtendedItemData.NewExtendedItemData += SaveEIDF;
             ExtendedItemData.LoadExtendedItemData += LoadEIDF;
             ExtendedItemData.RegisterCustomTypeID(BackPack.BackPackData.DataID, typeof(BackPack.BackPackData));
-            backpackUI = LoadAssetBundle("backpackui");
-            backpackAdmin = backpackUI!.LoadAsset<GameObject>("BackPack_Admin");
-            backpackUI.Unload(false);
         }
 
         private void LoadEIDF(ExtendedItemData itemdata)

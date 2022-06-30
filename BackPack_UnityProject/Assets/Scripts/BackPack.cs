@@ -31,7 +31,6 @@ public class BackPack : Container
 
 #if UNITY_COMPILEFLAG
     public ExtendedItemData? bagdata;
-    private bool IsActive => gameObject.activeInHierarchy;
     internal static BagTier StaticTier;
     private static Text? text;
     
@@ -235,14 +234,15 @@ public class BackPack : Container
     {
         #if UNITY_COMPILEFLAG
         if(Player.m_localPlayer == null) return;
+        if(m_nview == null) return;
         if (Player.m_localPlayer.IsDead()) return;
         if (!InventoryGui.IsVisible()) return;
         if (ZInput.GetButton("Backpack") && ZInput.GetButton("AltPlace"))
         { 
             try
             {
-                InventoryGui.instance.Show(this);
-                //Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                //InventoryGui.instance.Show(this);
+                Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
             }
             catch (Exception)
             {
@@ -303,6 +303,7 @@ public class BackPack : Container
     #region Enumerators
 
     #if UNITY_COMPILEFLAG
+    
     private IEnumerator WeightOffsetRoutine(float time)
     {
         while (true)
