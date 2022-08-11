@@ -79,7 +79,7 @@ jobs:
           rename -v 'y/A-Z/a-z/' * .dll
           rename -v 'y/-publicized/_publicized/' *.dll
           cp --verbose ~/publicAssemblies/* /home/runner/.steam/steam/steamapps/common/Valheim/valheim_Data/Managed/publicized_assemblies/
-          sudo cp --verbose ~/publicAssemblies/* /usr/lib/mono/4.6.2-api/
+          sudo cp --verbose ~/publicAssemblies/* /usr/lib/mono/4.8-api/
           cd ~
 
       - name: Build
