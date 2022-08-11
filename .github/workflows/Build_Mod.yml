@@ -88,7 +88,7 @@ jobs:
           wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.6/ServerSync.dll
           mkdir -p /home/runner/work/BackPacks/BackPacks/BackPacks/Libs
           mv -v ServerSync.dll /home/runner/work/BackPacks/BackPacks/BackPacks/Libs/
-          msbuild Trader2.0.sln /p:Configuration=Github
+          msbuild BackPacks.sln /p:Configuration=Github
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
