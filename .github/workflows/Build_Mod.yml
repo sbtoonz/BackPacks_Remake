@@ -27,7 +27,7 @@ jobs:
           wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
           sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
-          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-6.0 dotnet-runtime-6.0 rename
+          sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-6.0 dotnet-runtime-6.0 rename unzip
 
       - name: Restore solution dependencies
         run: |
@@ -88,6 +88,9 @@ jobs:
           wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.6/ServerSync.dll
           mkdir -p /home/runner/work/BackPacks/BackPacks/BackPacks/Libs
           mv -v ServerSync.dll /home/runner/work/BackPacks/BackPacks/BackPacks/Libs/
+          wget https://github.com/RandyKnapp/ValheimMods/raw/main/ExtendedItemDataFramework/ExtendedItemDataFramework.zip
+          unzip ExtendedItemDataFramework.zip -d EIDF/
+          mv EIDF/ExtendedItemDataFramework.dll /home/runner/work/BackPacks/BackPacks/BackPacks/Libs/
           msbuild BackPack.sln /p:Configuration=Github
 
       - name: Upload a Build Artifact
