@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BepInEx.Logging;
 using ExtendedItemDataFramework;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -99,7 +100,10 @@ namespace BackPacks
             {
                 try
                 {
+					BackPacks._logSource.LogDebug("Running Equip Patch");
                     if (Player.m_localPlayer == null) return;
+                    if(__instance != Player.m_localPlayer) return;
+                    if(__instance.gameObject.GetComponent<Player>().GetPlayerName() != Player.m_localPlayer.GetPlayerName())return;
                     if (__instance.m_nview.GetZDO().m_uid != Player.m_localPlayer.m_nview.GetZDO().m_uid) return;
                     if (!item.IsBackpack()) return;
                     switch (item.m_shared.m_itemType)
@@ -118,6 +122,7 @@ namespace BackPacks
                             if (Player.m_localPlayer.m_shoulderItem.Extended().GetUniqueId() == item.Extended().GetUniqueId()) return;
                             if (Player.m_localPlayer.m_shoulderItem.Extended().GetBagInv() != item.GetBagInv())
                             {
+	                            BackPacks._logSource.Log(LogLevel.Debug,"Running UnEquip Patch on" + Player.m_localPlayer.GetPlayerName());
                                 var bag = Player.m_localPlayer.gameObject.GetComponentInChildren<BackPack>();
                                 bag.CloseBag();
                                 bag.DeRegisterRPC();

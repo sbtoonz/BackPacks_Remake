@@ -357,7 +357,9 @@ public class BackPack : Container
         while (true)
         {
             yield return new WaitForSeconds(time);
+#if UNITY_COMPILEFLAG
             if (!m_nview.IsValid()) break;
+#endif
             LoadBagContents();
         }
     }
@@ -453,6 +455,7 @@ public class BackPack : Container
 		ZLog.Log("Player " + uid + " wants to open " + base.gameObject.name + "   im: " + ZDOMan.instance.GetMyID());
 		if (!m_nview.IsOwner())
 		{
+            m_nview.ClaimOwnership();
 			ZLog.Log("  but im not the owner");
 		}
 		else if ((IsInUse() || ((bool)m_wagon && m_wagon.InUse())) && uid != ZNet.instance.GetUID())

@@ -144,5 +144,9 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 ## V0.3.2
 * Update ServerSync
 
+## V0.3.4
+* Update ItemSwitch patch to avoid issues with 2x players
+* Update RPC calls for opening bag contents 
+
 
 <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>

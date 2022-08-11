@@ -64,8 +64,8 @@
     <Reference Include="assembly_utils_publicized">
       <HintPath>$(GamePath)\valheim_Data\Managed\publicized_assemblies\assembly_utils_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="assembly_valheim_publicized">
-      <HintPath>$(GamePath)\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
+    <Reference Include="assembly_valheim">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
     </Reference>
     <Reference Include="AugaAPI">
       <HintPath>Libs\AugaAPI.dll</HintPath>
@@ -323,10 +323,10 @@
 	   </PropertyGroup>
 	   <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
 	 </Target>
-	 <Target Name="Copy" AfterTargets="Build">
+	 <Target Name="Copy" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;$(GamePath)\BepInEx\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
-	 <Target Name="ThunderStore" AfterTargets="Build">
+	 <Target Name="ThunderStore" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
      <Exec Command="copy /Y &quot;$(TargetDir)$(AssemblyName).dll&quot; &quot;ThunderStore_Release\plugins\$(AssemblyName).dll&quot;" />
 	</Target>
 </Project>
