@@ -54,6 +54,7 @@
             <GamePath Condition="!Exists('$(GamePath)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)\steamapps\common\Valheim</GamePath>
             <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files\Steam\steamapps\common\Valheim</GamePath>
             <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files (x86)\Steam\steamapps\common\Valheim</GamePath>
+            <GamePath Condition="!Exists('$(GamePath)')">$(HOME)/.steam/steam/steamapps/common/Valheim</GamePath>
         </PropertyGroup>
     </When>
 </Choose>
@@ -310,6 +311,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ServerSync\ServerSync.csproj" Condition="'$(Configuration)'=='Release'">
+      <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
+      <Name>ServerSync</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ServerSync\ServerSync.csproj" Condition="'$(Configuration)'=='Debug'">
       <Project>{e16c3332-50b4-4da6-9e8a-a590c4e5cd49}</Project>
       <Name>ServerSync</Name>
     </ProjectReference>
