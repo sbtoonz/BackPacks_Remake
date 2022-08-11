@@ -86,11 +86,11 @@ jobs:
         run: |
           mkdir -p /home/runner/work/BackPacks/BackPacks/ServerSync/bin/Release
           wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.6/ServerSync.dll
-          mkdir -p /home/runner/work/BackPacks/BackPacks/BackPacks/Libs
-          mv -v ServerSync.dll /home/runner/work/BackPacks/BackPacks/BackPacks/Libs/
+          mkdir -p /home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/Libs
+          mv -v ServerSync.dll /home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/Libs/
           wget https://github.com/RandyKnapp/ValheimMods/raw/main/ExtendedItemDataFramework/ExtendedItemDataFramework.zip
           unzip ExtendedItemDataFramework.zip -d EIDF/
-          mv EIDF/ExtendedItemDataFramework.dll /home/runner/work/BackPacks/BackPacks/BackPacks/Libs/
+          mv EIDF/ExtendedItemDataFramework.dll /home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/Libs/
           msbuild BackPack.sln /p:Configuration=Github
 
       - name: Upload a Build Artifact
@@ -99,7 +99,7 @@ jobs:
           # Artifact name
           name: 'BackPacks Remake'
           # A file, directory or wildcard pattern that describes what to upload
-          path: '/home/runner/work/BackPacks/BackPacks/BackPacks/bin/Release/BackPacks.dll'
+          path: '/home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/bin/Release/BackPacks.dll'
 
       - name: Set Output Version
         id: vars
@@ -121,6 +121,6 @@ jobs:
           name: ${{ steps.vars.outputs.tag }}
           tag_name: ${{ steps.vars.outputs.tag }}
           body_path: CHANGELOG.MD
-          files: /home/runner/work/BackPacks/BackPacks/BackPacks/bin/Release/BackPacks.dll
+          files: /home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/bin/Release/BackPacks.dll
         env:
           GITHUB_TOKEN: ${{secrets.PATOKEN}}
