@@ -29,9 +29,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-6.0 dotnet-runtime-6.0 rename
 
-      - name: Add MSBuild into path
-        uses: microsoft/setup-msbuild@v1.0.2
-
       - name: Restore solution dependencies
         run: |
           dotnet restore
