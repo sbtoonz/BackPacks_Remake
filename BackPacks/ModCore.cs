@@ -212,6 +212,7 @@ namespace BackPacks
             OpenInventoryKey = config("General", "Key to open bag", KeyCode.E,
                 "Modifier key to use when opening bag contents");
 
+            OpenInventoryKey.SettingChanged += SetKey;
             #endregion
 
             DropallOnUnEquip = config("General", "Drop all bag contents on unequip", false,
@@ -224,6 +225,12 @@ namespace BackPacks
             
             configSync.AddLockingConfigEntry(ServerConfigLocked);
         }
+        private void SetKey(object sender, EventArgs e)
+        {
+           var temp = ZInput.instance.GetButtonDef("Backpack");
+           temp.m_key = (KeyCode)OpenInventoryKey?.Value!;
+        }
+
         private void SetupIronBag()
         {
             IronBag = new Item("backpacks", "CapeIronBackpackZ", "Assets");

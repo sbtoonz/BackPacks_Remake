@@ -315,7 +315,7 @@ namespace BackPacks
 
         
 
-        [HarmonyPatch(typeof(ZInput), nameof(ZInput.Reset))]
+        [HarmonyPatch(typeof(ZInput), nameof(ZInput.Load))]
         public static class ZinputPatch
         {
             public static void Postfix(ZInput __instance)
