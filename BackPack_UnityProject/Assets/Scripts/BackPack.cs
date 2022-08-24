@@ -194,7 +194,7 @@ public class BackPack : Container
         StartCoroutines();
         LoadBagContents();
         if(InventoryGui.instance.m_container.gameObject.activeInHierarchy) CloseBag();
-        Player.m_localPlayer?.m_shoulderItem.Extended()?.Save();
+        Player.m_localPlayer.m_shoulderItem.Extended()?.Save();
         StaticTier = tier;
         if (Auga.API.IsLoaded())
         {
@@ -242,7 +242,9 @@ public class BackPack : Container
             try
             {
                 //InventoryGui.instance.Show(this);
+                if(InventoryGui.instance.IsContainerOpen())return;
                 Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+                return;
             }
             catch (Exception)
             {
