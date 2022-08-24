@@ -148,5 +148,29 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 * Update ItemSwitch patch to avoid issues with 2x players
 * Update RPC calls for opening bag contents 
 
+## V0.3.5
+* Filler for Tstore
+
+## V0.3.6
+* Filler for Tstore
+
+## V0.3.7
+* Filler for Tstore
+
+## V0.3.8
+* Filler for Tstore
+
+## V0.3.9
+* Filler for Tstore
+
+## V0.4.0
+* Filler for Tstore
+
+## V0.4.1
+* Change bag open methodology ... again
+* Fix the key assign not changing live in game 
+* Add a couple return logic statements to avoid sending off the bag open RPC if the container gui instance is populated
+* remove Pdb files from the repack
+
 
 <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>
