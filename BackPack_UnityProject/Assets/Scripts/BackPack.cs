@@ -239,17 +239,7 @@ public class BackPack : Container
         if (!InventoryGui.IsVisible()) return;
         if (ZInput.GetButton("Backpack") && ZInput.GetButton("AltPlace"))
         { 
-            try
-            {
-                //InventoryGui.instance.Show(this);
-                if(InventoryGui.instance.IsContainerOpen())return;
-                Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
-                return;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            TryOpenBagRPC();
         }
         if (!InventoryGui.instance.isActiveAndEnabled) return;
         if (Auga.API.IsLoaded())
@@ -305,7 +295,12 @@ public class BackPack : Container
     #region Enumerators
 
     #if UNITY_COMPILEFLAG
-    
+    private void TryOpenBagRPC()
+    {
+            if(InventoryGui.instance.IsContainerOpen()) return;
+            if(InventoryGui.instance.m_currentContainer != null) return;
+            Player.m_localPlayer.m_nview.InvokeRPC("RequestBagOpen", Game.instance.GetPlayerProfile().GetPlayerID());
+    }
     private IEnumerator WeightOffsetRoutine(float time)
     {
         while (true)
