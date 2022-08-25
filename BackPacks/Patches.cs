@@ -299,6 +299,14 @@ namespace BackPacks
                         .Find("root/Player/BackPackToolTip/Content").gameObject;
                     var icon = BackPack.AuguaTrashThing.transform.Find("Icon").gameObject;
                     icon.gameObject.SetActive(false);
+                    var image = BackPack.AuguaTrashThing.transform.Find("Image").gameObject;
+                    image.gameObject.SetActive(false);
+                    Object.DestroyImmediate(BackPack.AuguaTrashThing.GetComponent<Button>());
+                    Object.DestroyImmediate(BackPack.AuguaTrashThing.GetComponent<AugaUnity.AugaTrasher>());
+                    Object.DestroyImmediate(BackPack.AuguaTrashThing.GetComponent<ContentSizeFitter>());
+                    Object.DestroyImmediate(BackPack.AuguaTrashThing.GetComponent<HorizontalLayoutGroup>());
+                    Object.DestroyImmediate(BackPack.AuguaTrashThing.GetComponent<ButtonSfx>());
+                    
                 }
                 
                 /*

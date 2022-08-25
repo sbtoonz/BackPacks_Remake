@@ -283,6 +283,7 @@
     </Compile>
     <Compile Include="ConfigurationManagerAttributes.cs" />
     <Compile Include="ModCore.cs" />
+    <Compile Include="MonoScripts\AugaTrasher.cs" />
     <Compile Include="MonoScripts\BagAdminPanel.cs" />
     <Compile Include="MonoScripts\BagElement.cs" />
     <Compile Include="MonoScripts\DragNDrop.cs" />
