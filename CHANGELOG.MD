@@ -172,5 +172,7 @@ If you get any conflicts/Issues please find me in the Odin+ Discord
 * Add a couple return logic statements to avoid sending off the bag open RPC if the container gui instance is populated
 * remove Pdb files from the repack
 
+## V0.4.2
+* Auga compatibility fix for issue https://github.com/sbtoonz/BackPacks_Remake/issues/58
 
 <p>  <b>IF YOU HAVE ANY OF THESE PROBLEMS PLEASE FILE AN ISSUE ON GITHUB</b> </p>
