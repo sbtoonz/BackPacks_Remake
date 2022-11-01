@@ -85,7 +85,7 @@ jobs:
       - name: Build
         run: |
           mkdir -p /home/runner/work/BackPacks/BackPacks/ServerSync/bin/Release
-          wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.6/ServerSync.dll
+          wget https://github.com/blaxxun-boop/ServerSync/releases/download/v1.13/ServerSync.dll
           mkdir -p /home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/Libs
           mv -v ServerSync.dll /home/runner/work/BackPacks_Remake/BackPacks_Remake/BackPacks/Libs/
           wget https://github.com/RandyKnapp/ValheimMods/raw/main/ExtendedItemDataFramework/ExtendedItemDataFramework.zip
